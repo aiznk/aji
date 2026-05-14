@@ -1,3 +1,5 @@
 {@ 
+	// chain expression like shell pipe.
+	// expr1 # expr1 # expr3
 	"Hi" # $r + "Bye" # puts($r)
 @}
