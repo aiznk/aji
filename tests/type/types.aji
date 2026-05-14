@@ -1,0 +1,99 @@
+{@
+def case1():
+    puts("Test type/types case1")
+
+    i = Int()
+    assert(i == 0)
+
+    f = Float()
+    assert(f == 0.0)
+
+    b = Bool()
+    assert(b == false)
+
+    s = Str()
+    assert(s == "")
+
+    a = Vec()
+    assert(len(a) == 0)
+
+    d = Dict()
+    assert(len(d) == 0)
+
+    p = Ptr()
+    assert(type(p) == Ptr)
+end
+
+def case2():
+    puts("Test type/types case2")
+
+    i = 0
+    a = Vec([i])
+    assert(len(a) == 1)
+    assert(id(a[0]) == id(i))  
+end
+
+def case3():
+    puts("Test type/types case3")
+
+    T = type(1)
+    assert(T == Int)
+    assert(Int == T)
+    assert(T != Bool)
+    assert(Bool != T)
+    assert(T() == 0)
+    assert(T(1) == 1)
+
+    assert(type("Hige")("Hoge") == "Hoge")
+end
+
+def case4():
+    puts("Test type/types case4")
+
+    types = [Int, Float, Str]
+
+    for i = 0; i < len(types); i += 1:
+        if i == 0 or i == 2:
+            assert(Str(types[i]("100")) == "100")
+        elif i == 1:
+            assert(Str(types[i]("100")) == "100.0")
+        end
+    end
+end
+
+def case5():
+    puts("Test type/types case5")
+
+    assert(Str(type(type(1))) == "(type)")
+end
+
+def case6():
+    puts("Test type/types case6")
+
+    struct Animal:
+        name = "Tama"
+    end
+
+    assert(type(Animal) == Animal)
+
+    animal = Animal()
+    assert(type(animal) == Animal)
+
+    animal = type(animal)("Mike")
+    assert(animal.name == "Mike")
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+    "case5": case5,
+    "case6": case6,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

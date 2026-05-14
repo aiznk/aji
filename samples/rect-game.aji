@@ -1,0 +1,105 @@
+{@
+enum:
+    DISP_HEIGHT = 30
+    DISP_WIDTH = 60
+    BUF_SIZE = DISP_HEIGHT * DISP_WIDTH
+    RECTS_SIZE = 4
+end
+
+struct Rect:
+    x = 0
+    y = 0
+    width = 4
+    height = 4
+end
+
+gBuf = []
+gRects = []
+
+def initBuf():
+    global gBuf 
+    gBuf = []
+    for i = 0; i < BUF_SIZE; i += 1:
+        gBuf.push(".")
+    end
+end
+
+def initRects():
+    for i = 0; i < RECTS_SIZE; i += 1:
+        rect = Rect()
+        rect.x = (rect.width * 2) * i
+        gRects.push(rect)
+    end
+end
+
+def init():
+    initBuf()
+    initRects()
+end
+
+def drawBuf():
+    for i = 0; i < len(gBuf); i += 1:
+        c = gBuf[i]
+        print(c)
+        if (i + 1) % DISP_WIDTH == 0:
+            puts()
+        end
+    end
+end
+
+def clearBuf():
+    global gBuf
+    gBuf = []
+
+    for i = 0; i < BUF_SIZE; i += 1:
+        gBuf.push(".")
+    end
+end
+
+def copyRect(rect):
+    for y = rect.y; y < rect.y + rect.height; y += 1:
+        for x = rect.x; x < rect.x + rect.width; x += 1:
+            i = y * DISP_WIDTH + x
+            gBuf[i] = "*"
+        end
+    end    
+end
+
+def copyRects():
+    for i = 0; i < len(gRects); i += 1:
+        rect = gRects[i]
+        copyRect(rect)
+    end
+end
+
+def update():
+    for i = 0; i < len(gRects); i += 1:
+        rect = gRects[i]
+        rect.y += 1
+        if rect.y + rect.height >= DISP_HEIGHT:
+            rect.y = 0
+        end
+    end
+end
+
+def draw():
+    clearBuf()
+    copyRects()
+    drawBuf()
+end
+
+def main():
+    init()
+
+    n = opts.args(1) or 1
+    n = Int(n)
+
+    for i = 0; i < n; i += 1:
+        puts(i)
+        update()
+        draw()
+    end
+end
+
+main()
+@}

@@ -1,0 +1,7 @@
+{@
+    import "socket"
+
+    def get(url):
+        // TODO
+    end
+@}

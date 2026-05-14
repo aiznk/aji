@@ -1,0 +1,38 @@
+{@
+header = "Test stmt/import"
+
+def case1():
+    puts("$header case1")
+
+    import "text"
+    from "text" import capitalize
+
+    try:
+        import "nothing"
+    catch ImportError as e:
+        puts(e.what())
+    end
+
+    try:
+        import "./nothing"
+    catch ImportError as e:
+        puts(e.what())
+    end
+
+    try:
+        import "/nothing"
+    catch ImportError as e:
+        puts(e.what())
+    end
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

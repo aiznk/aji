@@ -1,0 +1,38 @@
+{@
+    struct Enemy:
+        hp = 100
+        x = 0
+        y = 0
+
+        def new(hp, x, y):
+            return Enemy(hp, x, y)
+        end
+
+        met move(self, vx, vy):
+            self.x += vx
+            self.y += vy
+        end
+
+        met toStr(self):
+            return Str(self.hp) + " " + Str(self.x) + " " + Str(self.y)
+        end
+    end
+
+    def main():
+        n = Int(opts.args(1))
+        enemies = []
+
+        for i = 0; i < n; i += 1:
+            en = Enemy.new(i * 10, i, i % 5)
+            enemies.push(en)
+        end
+
+        for i = 0; i < len(enemies); i+= 1:
+            en = enemies[i]
+            en.move(1, 0)
+            puts(en.toStr(), " ")
+        end
+    end
+
+    main()
+@}

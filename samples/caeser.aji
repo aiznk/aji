@@ -1,0 +1,35 @@
+{@
+    /**
+     * @brief Encode text by nshift
+     * 
+     * @param[in] {Str} s Text
+     * @param[in] {Int} nshift Number of shift
+     * @return {Str} Encoded text
+     */
+    def encode(s, nshift):
+        d = ""
+        for i = 0; i < len(s); i += 1:
+            n = ord(s[i])
+            ch = chr(n + nshift)
+            d += ch
+        end
+        return d
+    end
+
+    /**
+     * @brief Decode text by nshift
+     * 
+     * @param[in] {Str} s Text
+     * @param[in] {Int} nshift Number of shift
+     * @return {Str} Decoded text
+     */
+    def decode(s, nshift):
+        return encode(s, -nshift)
+    end
+
+    s = encode("abcdef", 3)
+    puts("encoded:", s)
+
+    s = decode(s, 3)
+    puts("decoded:", s)
+@}

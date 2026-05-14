@@ -1,0 +1,230 @@
+{@
+from "tests/utils" import run
+header = "Test stmt/inject-block"
+
+def base1(context):
+    block header: @}
+        <h1>{: context.siteName :}</h1>
+    {@ end
+
+    block content:
+    end
+
+    block footer: @}
+        <p>Footer</p>
+    {@ end
+end
+
+def derived1(context) extends base1:
+    inject content: @}
+        <p>{: context.content :}</p>
+    {@ end
+    super(context)
+end
+
+def derived2(context) extends derived1:
+    inject footer: @}
+        <p>{: context.footerText :}</p>
+    {@ end
+    super(context)
+end
+
+def case1():
+    puts("$header case1")
+    derived1({
+        siteName: "Test",
+        content: "This is test content",
+    })
+end
+
+def case2():
+    puts("$header case2")
+    derived2({
+        siteName: "Test",
+        content: "This is test content",
+        footerText: "My footer",
+    })
+end
+
+struct S:
+    def new(headerText, message):
+        self = S()
+        self.headerText = headerText
+        self.message = message
+        return self
+    end
+
+    met base(self):
+        block header: @}
+            <h1>{: self.headerText :}</h1>
+        {@ end
+
+        block content: end
+    end
+
+    met derived(self) extends base:
+        inject content: @}
+            <p>{: self.message :}</p>
+        {@ end
+        super(self)
+    end
+end
+
+struct SS:
+end
+
+def case3():
+    puts("$header case3")
+    s = S.new("my header", "my message")
+    s.derived()
+end
+
+def superMan(pA, pB):
+    block content:
+        *pA += 1
+        @}I am super man.
+        {@
+    end
+end
+
+def rocky() extends superMan:
+    puts("$header case4")
+
+    a = 0
+    b = 0
+
+    inject content:
+        *pB += 1
+        @}I am case4.
+        {@
+    end
+
+    super(&a, &b)
+    assert(a == 0)
+    assert(b == 1)
+end
+
+def case4():
+    // The inject and block statement and the pointer
+    rocky()
+end
+
+def case5():
+    puts("$header case5")
+
+    def base():
+        block content:
+        end
+    end
+    def derived() extends base:
+        inject content:
+            return 1
+        end
+        return super()
+    end
+
+    assert(derived() == 1)
+end
+
+def case6():
+    puts("$header case6")
+
+    def base():
+        a = 1
+        block b1:
+        end
+        return b
+    end
+
+    def derived() extends base:
+        inject b1:
+            b = a * 2
+        end
+        return super()
+    end
+
+    try:
+        derived()
+        assert(0 and "fail")
+    catch LookUpError as e:
+        assert(e.what() == "\"b\" is not defined")
+    end
+end
+
+def case7():
+    puts("$header case7")
+
+    def base():
+        a = 2
+        block b1:
+        end
+        return a
+    end
+
+    def derived() extends base:
+        inject b1:
+            nonlocal a
+            a *= 2
+        end
+        return super()
+    end
+
+    assert(derived() == 4)
+end
+
+def case8():
+    puts("$header case8")
+
+    struct Box:
+        def base():
+            a = 2
+            block b1:
+            end
+        end
+
+        def derived() extends base:
+            inject b1:
+                return a * 2
+            end
+            return super()
+        end
+    end
+
+    assert(Box.derived() == 4)
+end
+
+def case9():
+    puts("$header case9")
+
+    struct Box:
+        met base(self):
+            a = 2
+            block b1:
+            end
+        end
+
+        met derived(self) extends base:
+            inject b1:
+                return a * 2
+            end
+            return super()
+        end
+    end
+
+    assert(Box().derived() == 4)
+end
+
+def main(name):
+    run(name, {
+        "case1": case1,
+        "case2": case2,
+        "case3": case3,
+        "case4": case4,
+        "case5": case5,
+        "case6": case6,
+        "case7": case7,
+        "case8": case8,
+        "case9": case9,
+    })
+end
+@}

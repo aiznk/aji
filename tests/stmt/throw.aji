@@ -1,0 +1,18 @@
+{@
+
+def case1():
+    puts("Test stmt/nonlocal case1")
+
+    // throw a
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

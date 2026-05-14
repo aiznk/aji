@@ -1,0 +1,137 @@
+{@
+from "text" import capitalize
+from "unix" import cat, grep
+
+header = "Test expr/chain-expr"
+
+def case1():
+    puts("$header case1")
+
+    // $r is the special variable
+    // chain-expr store result to this variable 
+    result = 1 + 1 # $r + 2
+    assert(result == 4)
+
+    def f1(n):
+        return n * 2
+    end
+
+    def f2(n):
+        return n - 10
+    end
+
+    result = f1(10) # f2($r)
+    assert(result == 10)
+
+    struct Animal:
+        mnt = 2
+        met hige(self, n):
+            return n * self.mnt
+        end
+    end
+
+    animal = Animal()
+    result = f1(1) # animal.hige($r) # f2($r)
+    assert(result == -6)
+
+    lis = [f1(1)#f2($r), f1(1)#f2($r)]
+    assert(lis[0] == -8)
+    assert(lis[1] == -8)
+
+    s = "hige"
+    result = len(s) # $r * 2
+    assert(result == 8)
+
+    // if flag: flag * 2 end # $r * 10 # for i = 0; i < $r; i += 1: puts(i) end
+    // (if a >= 10: a else: a * 2 end) * 10
+    // (for i = 0; i < 10; i += 1: i * 2 end) * 10
+    // hige("hoge") # $r.upper() # mage($r).lower() # puts($r)
+
+    def hige():
+        return 1, 2
+    end
+
+    def mage(n):
+        return n * 10 
+    end
+
+    struct Animal:
+        met hoge(self, a, b):
+            return a * b
+        end
+    end
+    animal = Animal()
+    result = hige() # animal.hoge($r[0], $r[1]) # mage($r)
+    assert(result == 20)
+
+    def hige():
+        return 1, 2
+    end
+    def mage(n):
+        return n * 10 
+    end
+    struct Animal:
+        met hoge(self, a, b):
+            return a * b
+        end
+    end
+    animal = Animal()
+    result = hige() #
+             animal.hoge($r[1], $r[0]) #
+             mage($r)
+    assert(result == 20)
+
+    result = [1, 2, 3] # $r.pop() # Str($r)
+    assert(result == "3")
+
+    result = [1, 2, 3] # Str($r[0])
+    assert(result == "1")
+
+    // Str([1, 2, 3].pop())
+
+    result = { ababa: 1 } # $r.ababa * 10 # $r / 10
+    assert(result == 1)
+
+    cat("tests/io/file1.txt") # grep($r, "file1") # assert($r[0] == "this is file1 content")
+end
+
+def case2():
+    puts("$header case2")
+
+    struct S:
+        a = 1
+    end
+
+    s = S(2)
+    assert(s.a == 2)
+
+    struct S2:
+        a = 1 + 1 # $r + 2
+    end
+
+    s = S2()
+    assert(s.a == 4)
+
+    s = S2(100)
+    assert(s.a == 100)
+
+    1 + 2 # $r * 2
+    try:
+        puts($r)
+        assert(0 and "error")
+    catch LookUpError as e:
+        assert(e.what() == "\"$r\" is not defined")
+    end
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

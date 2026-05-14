@@ -1,0 +1,30 @@
+{@
+def all(cases):
+    puts("all")
+
+    funcs = cases.values()
+    for i = 0; i < len(funcs); i += 1:
+        funcs[i]()
+    end
+end
+
+def run(case, cases):
+    if case == "all":
+        all(cases)
+    elif case == "list":
+        keys = cases.keys()
+        for i = 0; i < len(keys); i += 1:
+            key = keys[i]
+            puts(key)
+        end
+    else:
+        keys = cases.keys()
+        for i = 0; i < len(keys); i += 1:
+            key = keys[i]
+            if key == case:
+                cases[key]()
+            end
+        end
+    end
+end
+@}

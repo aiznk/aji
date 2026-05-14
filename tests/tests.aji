@@ -1,0 +1,121 @@
+{@
+from "tests/expr/expr.aji" import main as exprMain
+from "tests/expr/pointer.aji" import main as ptrMain
+from "tests/expr/chain-expr.aji" import main as chainExprMain
+from "tests/stmt/for-stmt.aji" import main as forStmtMain
+from "tests/stmt/if-stmt.aji" import main as ifStmtMain
+from "tests/stmt/global.aji" import main as globalStmtMain
+from "tests/stmt/nonlocal.aji" import main as nonlocalStmtMain
+from "tests/stmt/throw.aji" import main as throwStmtMain
+from "tests/stmt/try-catch.aji" import main as tryCatchStmtMain
+from "tests/stmt/import.aji" import main as importStmtMain
+from "tests/stmt/del.aji" import main as delStmtMain
+from "tests/stmt/inject-block.aji" import main as injectBlockStmtMain
+from "tests/def/func.aji" import main as funcMain
+from "tests/type/types.aji" import main as typesMain
+from "tests/struct/struct.aji" import main as structMain
+from "tests/enum/enum.aji" import main as enumMain
+from "tests/mutable-and-immutable/mi.aji" import main as miMain
+from "tests/builtin/functions.aji" import main as functionsMain
+from "tests/builtin/modules/os.aji" import main as osMain
+from "tests/builtin/modules/io.aji" import main as ioMain
+from "tests/unicode/unicode.aji" import main as unicodeMain
+from "tests/bytes/bytes.aji" import main as bytesMain
+from "tests/io/file.aji" import main as fileMain
+from "tests/lib/lib.aji" import main as libMain
+from "tests/lib/list.aji" import main as listMain
+from "tests/lib/html.aji" import main as htmlMain
+from "tests/lib/resource.aji" import main as resourceMain
+from "tests/lib/csv.aji" import main as csvMain
+from "tests/lib/fileutils.aji" import main as fileUtilsMain
+from "tests/lib/text.aji" import main as textMain
+from "tests/lib/sort.aji" import main as sortMain
+from "tests/lib/textfile.aji" import main as textFileMain
+from "tests/lib/unix.aji" import main as unixMain
+from "tests/data/dict.aji" import main as dictMain
+from "tests/data/vector.aji" import main as vecMain
+from "tests/closure/closure.aji" import main as closureMain
+from "tests/blocks/blocks.aji" import main as blocksMain
+from "tests/other/other.aji" import main as otherMain
+
+cases = {
+    "expr": exprMain,
+    "ptr": ptrMain,
+    "chainExpr": chainExprMain,
+    "forStmt": forStmtMain,
+    "ifStmt": ifStmtMain,
+    "globalStmt": globalStmtMain,
+    "nonlocalStmt": nonlocalStmtMain,
+    "throwStmt": throwStmtMain,
+    "tryCatchStmt": tryCatchStmtMain,
+    "importStmt": importStmtMain,
+    "delStmt": delStmtMain,
+    "injectBlockStmt": injectBlockStmtMain,
+    "func": funcMain,
+    "struct": structMain,
+    "enum": enumMain,
+    "types": typesMain,
+    "mi": miMain,
+    "functions": functionsMain,
+    "os": osMain,
+    "io": ioMain,
+    "unicode": unicodeMain,
+    "bytes": bytesMain,
+    "lib": libMain,
+    "listMain": listMain,
+    "html": htmlMain,
+    "resource": resourceMain,
+    "csv": csvMain,
+    "file": fileMain,
+    "fileUtils": fileUtilsMain,
+    "text": textMain,
+    "sort": sortMain,
+    "textFile": textFileMain,
+    "unix": unixMain,
+    "dict": dictMain,
+    "vec": vecMain,
+    "closure": closureMain,
+    "blocks": blocksMain,
+    "other": otherMain,
+}
+
+def allTest():
+    keys = cases.keys()
+    for i = 0; i < len(keys); i += 1:
+        funcName = keys[i]
+        puts("Test $funcName")
+        cases[funcName]("all")
+    end
+end
+
+def showList():
+    keys = cases.keys()
+    for i = 0; i < len(keys); i += 1:
+        funcName = keys[i]
+        puts(funcName)
+    end
+end
+
+def main():
+    name = opts.args(1) or "all"
+    case = opts.args(2) or "all"
+
+    if name == "list":
+        return showList()
+    end
+
+    keys = cases.keys()
+    for i = 0; i < len(keys); i += 1:
+        funcName = keys[i]
+        if name == "all":
+            cases[funcName]("all")            
+        elif funcName == name:
+            cases[funcName](case)
+            break
+        end
+    end
+end
+
+main()
+
+@}

@@ -1,0 +1,69 @@
+{@ // views.aji
+from "samples/mysite/models" import Article
+from "samples/mysite/utils" import render
+
+/**
+ * @brief Home view
+ * 
+ * @param  {Request} The request object
+ * @return {Str} The renderred text
+ */
+def home(request):
+    context = {
+        siteName: "MySite",
+        description: "MySite is my homepage.",
+    }
+    return render(request, "samples/mysite/templates/home.aji", context)
+end
+
+/**
+ * @brief About view
+ * 
+ * @param  {Request} The request object
+ * @return {Str} The renderred text
+ */
+def about(request):
+    context = {
+        siteName: "About - MySite",
+        description: "About this home page.",
+    }
+    return render(request, "samples/mysite/templates/about.aji", context)
+end
+
+def blogGet(request):
+    articles = Article.all()
+
+    context = {
+        siteName: "Blog - MySite",
+        description: "MySite's Blog",
+        "articles": articles,
+    }
+    return render(request, "samples/mysite/templates/blog.aji", context)
+end
+
+def blogPost(request):
+    article = Article.create({
+        title: request.data.get("title"),
+        content: request.data.get("content"),
+    })
+
+    puts(article.title)
+    puts(article.content)
+
+    return nil, nil   
+end
+
+/**
+ * @brief Blog view
+ * 
+ * @param  {Request} The request object
+ * @return {Str} The renderred text
+ */
+def blog(request):
+    if request.method == "GET":
+        return blogGet(request)
+    elif request.method == "POST":
+        return blogPost(request)
+    end
+end
+@}

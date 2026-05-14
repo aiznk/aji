@@ -1,0 +1,72 @@
+{@
+    /*****************
+    * Basic function *
+    *****************/
+
+    def basic(a, b):
+        return a + b
+    end
+
+    puts(basic(1, 2))  // 3
+
+    /*************************
+    * Multiple return values *
+    *************************/
+
+    def multiple(a, b, c):
+        return a + 1, b + 2, c + 3
+    end
+
+    a, b, c = multiple(1, 2, 3)
+    puts(a, b, c)  // 2 4 6
+
+    /*****************
+    * Error handling *
+    *****************/
+
+    def getErr(a):
+        if a == 1:
+            throw ValueError("invalid value")
+        end
+        return a
+    end
+
+    try:
+        result = getErr(1)
+    catch ValueError as e:
+        puts(e.what())
+    end
+
+    /********************
+    * Callback function *
+    ********************/
+
+    def show(name, callback):
+        callback("The " + name)
+        return name, nil
+    end
+
+    def dump_(name):
+        def handler(name):
+            puts("In handler:", name)
+        end
+
+        return show(name, handler)
+    end
+
+    result, err = dump_("Homepage")
+    puts(result, err)  // Homepage nil
+
+    /********************
+    * Keyword arguments *
+    ********************/
+
+    def func(a, b, kwargs):
+        puts(a, b, kwargs.name, kwargs.value)
+    end
+
+    func(1, 2, {
+        name: "Tama",
+        value: 20,
+    })
+@}

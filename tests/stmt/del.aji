@@ -1,0 +1,21 @@
+{@
+
+header = "Test stmt/del"
+
+def case1():
+    puts("$header case1")
+
+    a = 1
+    del a
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

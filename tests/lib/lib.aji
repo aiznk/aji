@@ -1,0 +1,59 @@
+{@
+def importLib():
+    puts("Test lib/lib importLib")
+
+    import "html"
+    assert(type(html))
+
+    import "tests/lib/sample"
+    assert(sample)
+
+    import "tests/lib/sample.aji"
+    assert(sample)
+
+    import "tests/lib/sample2.aji"
+    assert(sample2)
+
+    try:
+        import "tests/lib/123sample.aji"
+    catch ImportError as e:
+        assert(e.what() == "not found valid identifier in import path")
+    end
+
+    try:
+        import "tests/lib/sample.aji"
+    catch ImportError as e:
+        assert(e.what() == "not found valid identifier in import path")
+    end
+
+    try:
+        import "tests/lib/sam-ple"
+    catch ImportError as e:
+        assert(e.what() == "not found valid identifier in import path")
+    end
+
+    import "html" as myhtml
+    assert(myhtml)
+
+    from "html" import Tag
+    assert(Tag)
+
+    from "html" import (Tag, Element)
+    assert(Tag and Element)
+
+    from "html" import Tag, Element
+    assert(Tag and Element)
+
+    import "fileutils" as fu
+    assert(fu)
+end
+
+cases = {
+    "importLib": importLib,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

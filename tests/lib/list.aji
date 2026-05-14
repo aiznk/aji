@@ -1,0 +1,27 @@
+{@
+from "list" import (Node, List)
+
+def case1():
+    puts("Test lib/list case1")
+
+    lis = List()
+    for i = 0; i < 4; i += 1:
+        lis.push(i)
+    end
+
+    assert(lis.pop() == 3)
+    assert(lis.pop() == 2)
+    assert(lis.pop() == 1)
+    assert(lis.pop() == 0)
+    assert(lis.pop() == nil)
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

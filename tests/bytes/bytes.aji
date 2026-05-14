@@ -1,0 +1,33 @@
+{@
+from "tests/utils" import run
+header = "Test bytes/bytes"
+
+def caseBasic():
+    puts("$header caseBasic")
+    
+    b = Bytes()
+    assert(b == Bytes(""))
+    assert(not (b != Bytes("")))
+
+    b = Bytes("123")
+    assert(b == Bytes("123"))
+
+    s = Bytes(Str("123"))
+    assert(s == Bytes("123"))
+
+    s = Str(Bytes("123"))
+    assert(s == "123")
+
+    b = Bytes("")
+    b += Bytes("123")
+    assert(b == Bytes("123"))
+    b += Bytes("456")
+    assert(b == Bytes("123456"))
+end
+
+def main(case):
+    run(case, {
+        "basic": caseBasic,
+    })
+end
+@}

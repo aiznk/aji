@@ -1,0 +1,35 @@
+{@
+    // pointer
+    a = 1
+    p = &a
+    *p += 1
+    puts(a)  // 2
+
+    // pointer to pointer
+    def f(pp):  
+        *pp = &a
+    end
+
+    p = Ptr()
+    f(&p)
+
+    *p += 1
+    puts(a)  // 3
+
+    // nil pointer exception
+    p = Ptr()
+    try:
+        *p
+    catch NilPointerError as e:
+        puts(e.what())  // 
+    end
+
+    // multi reference
+    a = 1
+    p = &a
+    q = &a
+
+    *p += 1
+    *q += 1
+    puts(a)  // 3
+@}

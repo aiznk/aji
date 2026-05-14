@@ -1,0 +1,175 @@
+{@
+def case1():
+	puts("Test data/dict case1")
+
+	d = {"key": "val"}
+	assert(d["key"] == "val")
+
+	d = {"a": 1, "b": 2}
+	assert(d["a"] == 1)
+	assert(d["b"] == 2)
+
+	val = "gray"
+	d = {"class": val}
+	assert(d["class"] == "gray")
+
+	val = "gray"
+	d = {}
+	d["class"] = val
+	assert(d["class"] == "gray")
+end
+
+def case2():
+	puts("Test data/dict case2")
+
+	d = {}
+	def func():
+		nonlocal d
+		val = "gray"
+		d["class"] = val
+	end
+
+	func()
+	assert(d["class"] == "gray")
+end
+
+def case3():
+	puts("Test data/dict case3")
+
+	d = {}
+	def func():
+		nonlocal d
+		i = [[1]]
+		d["class"] = i[0][0]
+	end
+
+	func()
+	assert(d["class"] == 1)
+end
+
+def case4():
+	puts("Test data/dict case4")
+
+	def func():
+		return 1
+	end
+
+	met method(self):
+		return self.call()
+	end
+
+	d = {
+		call: func,
+		sub: {
+			call: func,
+		},
+		m: method,
+	}
+
+	assert(d.call() == 1)
+	assert(d.sub.call() == 1)
+	assert(d.m() == 1)
+end
+
+def case5():
+	puts("Test data/dict case5")
+	
+	struct S:
+		value = "hige"
+	end
+
+	s = S()
+	d = {}
+
+	d[s.value] = 1
+
+	dd = { hogeKey: "hoge" }
+	d[dd.hogeKey] = 2
+
+	d[s.value] = {}
+	d[s.value][dd.hogeKey] = 3
+end
+
+def case6():
+	puts("Test data/dict case6")
+
+	d = { a: 1, b: 2 }
+
+	assert(d.has("a") == true)
+	assert(d.has("b") == true)
+	assert(d.has("c") == false)
+
+	assert(d.has(["a"]) == true)
+	assert(d.has(["a", "b"]) == true)
+	assert(d.has(["c", "b"]) == true)
+	assert(d.has(["a", "c"]) == true)
+	assert(d.has(["c", "c"]) == false)
+end
+
+def case7():
+	puts("Test data/dict case7")
+
+	d = { a: 1, b: 2 }
+
+	keys = d.keys()
+	assert(len(keys) == 2)
+	assert(keys[0] == "a")
+	assert(keys[1] == "b")
+
+	d = {}
+	keys = d.keys()
+	assert(len(keys) == 0)
+end
+
+def case8():
+	puts("Test data/dict case8")
+
+	d = { a: 1, b: 2 }
+
+	values = d.values()
+	assert(len(values) == 2)
+	assert(values[0] == 1)
+	assert(values[1] == 2)
+
+	d = {}
+	values = d.values()
+	assert(len(values) == 0)
+end
+
+def case9():
+	puts("Test data/dict case9")
+
+	d = { a: 1, b: 2 }
+
+	items = d.items()
+	assert(len(items) == 2)
+	assert(items[0][0] == "a")
+	assert(items[0][1] == 1)
+	assert(items[1][0] == "b")
+	assert(items[1][1] == 2)
+
+	d = {}
+	items = d.items()
+	assert(len(items) == 0)
+
+	d = { a: { b: 0 }}
+	assert(d.a.b == 0)
+end
+
+cases = {
+	"case1": case1,
+	"case2": case2,
+	"case3": case3,
+	"case4": case4,
+	"case5": case5,
+	"case6": case6,
+	"case7": case7,
+	"case8": case8,
+	"case9": case9,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

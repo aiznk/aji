@@ -1,0 +1,206 @@
+{@
+    enum:
+        F = 0 // Floor
+        W = 10 // Wall
+        P = 100 // Player
+        B = 1000 // Box
+        G = 10000 // Goal
+        UP
+        DOWN
+        LEFT
+        RIGHT
+    end
+
+    struct Map:
+        ngoals = 2
+        matrix = [
+            [W, W, W, W, W, W, W, W],
+            [W, P, F, F, F, F, G, W],
+            [W, F, F, F, F, F, F, W],
+            [W, F, B, F, F, F, F, W],
+            [W, F, F, F, F, F, F, W],
+            [W, F, F, F, B, F, F, W],
+            [W, F, F, F, F, F, G, W],
+            [W, W, W, W, W, W, W, W],
+        ]
+
+        met canMove(self, x, y):
+            c = self.matrix[y][x]
+            ok = c == F or c == G
+            return ok, c
+        end
+
+        met pushBox(self, dir, bx, by):
+            toX = 0
+            toY = 0
+
+            if dir == UP:
+                toY = -1
+            elif dir == DOWN:
+                toY = 1
+            elif dir == LEFT:
+                toX = -1
+            elif dir == RIGHT:
+                toX = 1
+            end
+
+            x = bx + toX
+            y = by + toY
+
+            ok, _ = self.canMove(x, y)
+            if ok:
+                self.setBox(bx, by, x, y)
+            end
+
+            return ok
+        end
+
+        met setBox(self, oldX, oldY, newX, newY):
+            self.matrix[oldY][oldX] -= B
+            self.matrix[newY][newX] += B
+        end
+
+        met setPlayer(self, old, new):
+            self.matrix[old.y][old.x] -= P
+            self.matrix[new.y][new.x] += P
+        end
+
+        met draw(self):
+            for y = 0; y < len(self.matrix); y += 1:
+                for x = 0; x < len(self.matrix[0]); x += 1:
+                    c = self.matrix[y][x]
+                    if c == F:
+                        print(" ")
+                    elif c == W:
+                        print(".")
+                    elif c == P or c == P + G:
+                        print("P")
+                    elif c == B or c == B + G:
+                        print("B")
+                    elif c == G:
+                        print("G")
+                    end
+                end
+                puts()
+            end
+        end
+
+        met checkGoal(self):
+            n = 0
+            for y = 0; y < len(self.matrix); y += 1:
+                for x = 0; x < len(self.matrix[0]); x += 1:
+                    c = self.matrix[y][x]
+                    if c == B + G:
+                        n += 1
+                    end
+                end
+            end
+            return self.ngoals == n
+        end
+    end
+
+    struct Object:
+        x = 0
+        y = 0
+    end
+
+    struct Player:
+        extract(Object)
+    end
+
+    struct Game:
+        map = Map()
+        player = Player(1, 1)
+
+        met update(self):
+            print("command > ")
+            cmd = stdin.read(2)
+            if cmd == "":
+                return false
+            end
+            
+            result = self.consumeCommand(cmd.rstrip())
+            if not result:
+                return result
+            end
+
+            goal = self.map.checkGoal()
+            if goal:
+                puts("GOAL!")
+                self.draw()
+                return false
+            end
+            return true
+        end
+
+        met consumeCommand(self, cmd):
+            if cmd == "q":
+                return false
+            elif cmd == "a":
+                self.moveLeft()
+            elif cmd == "d":
+                self.moveRight()
+            elif cmd == "w":
+                self.moveUp()
+            elif cmd == "s":
+                self.moveDown()
+            end
+            return true
+        end
+
+        met setPlayerPos(self, dir, x, y):
+            canMove, collided = self.map.canMove(x, y)
+            if collided == B:
+                canMove = self.map.pushBox(dir, x, y)
+            end
+
+            if canMove:
+                old = deepcopy(self.player)
+                self.player.x = x
+                self.player.y = y
+                self.map.setPlayer(old, self.player)
+            end
+        end
+
+        met moveLeft(self):
+            x = self.player.x - 1
+            y = self.player.y
+            self.setPlayerPos(LEFT, x, y)
+        end
+
+        met moveRight(self):
+            x = self.player.x + 1
+            y = self.player.y
+            self.setPlayerPos(RIGHT, x, y)
+        end
+
+        met moveUp(self):
+            x = self.player.x
+            y = self.player.y - 1
+            self.setPlayerPos(UP, x, y)
+        end
+
+        met moveDown(self):
+            x = self.player.x
+            y = self.player.y + 1
+            self.setPlayerPos(DOWN, x, y)
+        end
+
+        met draw(self):
+            self.map.draw()
+        end
+    end
+
+    def main():
+        puts("SOKOBAN\n")
+        puts("The commands are (q, w, s, d, a)")
+        game = Game()
+        game.draw()
+
+        for game.update():
+            game.draw()
+        end
+    end
+
+    main()
+@}

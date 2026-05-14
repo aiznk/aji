@@ -1,0 +1,6 @@
+{@
+    from "unix" import cat, tail, head
+
+    cat("README.md") # tail($r, { n:5 }) # puts("\n".join($r))
+    cat("README.md") # head($r, { n:3 }) # puts("\n".join($r))
+@}

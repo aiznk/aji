@@ -1,0 +1,20 @@
+{@
+from "csv" import CSV
+
+csv = CSV.new()
+
+s = "a1,b1,c1
+a2,b2
+a3
+"
+csv.parse(s)
+
+assert(csv.records[0][0] == "a1")
+assert(csv.records[0][1] == "b1")
+assert(csv.records[0][2] == "c1")
+
+assert(csv.records[1][0] == "a2")
+assert(csv.records[1][1] == "b2")
+
+assert(csv.records[2][0] == "a3")
+@}

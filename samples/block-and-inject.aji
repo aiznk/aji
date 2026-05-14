@@ -1,0 +1,40 @@
+{@
+    /**
+     * Draw base page by the web site title
+     *
+     * @param {str} title web site title
+     */
+    def drawBase(title):
+        block header: @}
+            <html>
+            <head>
+                <title>{: title.capitalize() :}</title>
+            </head>
+            <body>
+        {@ end
+
+        block content:
+        end
+
+        block footer: @}
+            <p>Copy (c) 2020</p>
+            </body>
+            </html>
+        {@ end
+    end
+
+    /**
+     * Draw home page by the web site title
+     *
+     * @param {str} title web site title
+     */
+    def drawHome(title) extends drawBase:
+        inject content: @}
+            <h1>Welcome to {: title.capitalize() :}!</h1>
+            <p>This homepage provides many contents to you.</p>
+        {@ end
+        super(title)
+    end
+
+    drawHome("Aji's home")
+@}

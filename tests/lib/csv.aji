@@ -1,0 +1,183 @@
+{@
+from "csv" import CSV
+
+header = "Test lib/csv"
+
+def case1():
+    puts("$header case1")
+
+    csv = CSV.new()
+
+    s = "a1,b1,c1
+a2,b2
+a3
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "a1")
+    assert(csv.rows[0][1] == "b1")
+    assert(csv.rows[0][2] == "c1")
+
+    assert(csv.rows[1][0] == "a2")
+    assert(csv.rows[1][1] == "b2")
+
+    assert(csv.rows[2][0] == "a3")
+end
+
+def case2():
+    puts("$header case2")
+
+    csv = CSV.new()
+
+    s = "   a1,  b1,  c1
+a2  ,  b2
+  a3
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "   a1")
+    assert(csv.rows[0][1] == "  b1")
+    assert(csv.rows[0][2] == "  c1")
+
+    assert(csv.rows[1][0] == "a2  ")
+    assert(csv.rows[1][1] == "  b2")
+
+    assert(csv.rows[2][0] == "  a3")
+end
+
+def case3():
+    puts("$header case3")
+
+    csv = CSV.new()
+
+    s = "   a1,  b1,  c1
+a2  ,  b2
+  a3
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "   a1")
+    assert(csv.rows[0][1] == "  b1")
+    assert(csv.rows[0][2] == "  c1")
+
+    assert(csv.rows[1][0] == "a2  ")
+    assert(csv.rows[1][1] == "  b2")
+
+    assert(csv.rows[2][0] == "  a3")
+end
+
+def case4():
+    puts("$header case4")
+
+    csv = CSV.new()
+
+    s = "a1, \"b1\" ,c1
+a2,b2
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "a1")
+    assert(csv.rows[0][1] == "b1")
+    assert(csv.rows[0][2] == "c1")
+
+    assert(csv.rows[1][0] == "a2")
+    assert(csv.rows[1][1] == "b2")
+
+    s = "a1, \"b1
+bb2\",c1
+a2,b2
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "a1")
+    assert(csv.rows[0][1] == "b1\nbb2")
+    assert(csv.rows[0][2] == "c1")
+
+    assert(csv.rows[1][0] == "a2")
+    assert(csv.rows[1][1] == "b2")
+end
+
+def case5():
+    puts("$header case5")
+
+    csv = CSV.new()
+    csv.rows = [
+        [123, "223", 323],
+        ["abc", "def", "ghi"],
+    ]
+    s = csv.stringify()
+    assert(s == "\"123\",\"223\",\"323\"
+\"abc\",\"def\",\"ghi\"
+")
+end
+
+def case6():
+    puts("$header case6")
+
+    csv = CSV.new()
+    csv.parse(",,,
+,abc,def")
+    assert(csv.rows[0][0] == "")
+    assert(csv.rows[0][1] == "")
+    assert(csv.rows[0][2] == "")
+    assert(csv.rows[1][0] == "")
+    assert(csv.rows[1][1] == "abc")
+    assert(csv.rows[1][2] == "def")
+end
+
+def case7():
+    puts("$header case7")
+
+    csv = CSV.new()
+    csv.parse("\\\",\\\"")
+    assert(csv.rows[0][0] == "\"")
+    assert(csv.rows[0][1] == "\"")
+end
+
+def case8():
+    puts("$header case8")
+
+    csv = CSV.new()
+    s = "\"aaa\",\"bbb\"
+\"ccc\",\"ddd\"
+"
+    csv.parse(s)
+
+    assert(csv.rows[0][0] == "aaa")
+    assert(csv.rows[0][1] == "bbb")
+    assert(csv.rows[1][0] == "ccc")
+    assert(csv.rows[1][1] == "ddd")
+
+    csv.addRow(["abc", "def"])
+
+    assert(csv.rows[0][0] == "aaa")
+    assert(csv.rows[0][1] == "bbb")
+    assert(csv.rows[1][0] == "ccc")
+    assert(csv.rows[1][1] == "ddd")
+    assert(csv.rows[2][0] == "abc")
+    assert(csv.rows[2][1] == "def")
+
+    s = csv.stringify()
+    assert(s == "\"aaa\",\"bbb\"
+\"ccc\",\"ddd\"
+\"abc\",\"def\"
+")
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+    "case5": case5,
+    "case6": case6,
+    "case7": case7,
+    "case8": case8,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

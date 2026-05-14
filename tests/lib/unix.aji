@@ -1,0 +1,144 @@
+{@
+from "tests/utils" import run
+from "unix" import write, cat, grep, sort, sortlines, tail, head
+
+header = "Test lib/unix"
+
+def caseWrite():
+    puts("$header write")
+
+    write("hige", "tests/temp/hige.txt") #
+        cat("tests/temp/hige.txt") #
+        assert($r == "hige")
+        
+    write("hige", ["tests/temp/hige.txt", "tests/temp/hige2.txt"]) #
+        cat(["tests/temp/hige.txt", "tests/temp/hige2.txt"]) #
+        assert($r == "higehige")
+end
+
+def caseCat():
+    puts("$header cat")
+
+    cat("tests/io/file1.txt") # assert($r == "this is file1 content")
+    cat(["tests/io/file1.txt", "tests/io/file1.txt"]) # assert($r == "this is file1 contentthis is file1 content")
+end
+
+def caseGrep():
+    puts("$header grep")
+
+    grep("hige hoge\nfuge", "hige") # assert($r[0] == "hige hoge")
+    grep(["hige hoge", "fuge hige"], "hige") # assert($r[0] == "hige hoge" and $r[1] == "fuge hige")
+end
+
+def caseSort():
+
+    return  // TODO: fix me!
+
+    puts("$header sort")
+
+    res = sort([3, 1, 2, 5, 4], nil)
+    assert(len(res) == 5)
+    assert(res[0] == 1)
+    assert(res[1] == 2)
+    assert(res[2] == 3)
+    assert(res[3] == 4)
+    assert(res[4] == 5)
+
+    res = sort([3, 1, 2, 5, 4], { r: true })
+    assert(len(res) == 5)
+    assert(res[0] == 5)
+    assert(res[1] == 4)
+    assert(res[2] == 3)
+    assert(res[3] == 2)
+    assert(res[4] == 1)
+end
+
+def caseSortlines():
+
+    return  // TODO: fix me!
+
+    puts("$header sortlines")
+
+    res = open("tests/tmp/sortlines.txt", "w")
+    res.write("123\n423\n323\n523\n223\n\n\n")
+    res.close()
+
+    res = sortlines("tests/tmp/sortlines.txt", nil)
+    assert(res == "\n\n\n123\n223\n323\n423\n523")
+
+    res = sortlines("tests/tmp/sortlines.txt", { r: true })
+    assert(res == "523\n423\n323\n223\n123\n\n\n")
+end
+
+def caseTail():
+    puts("$header tail")
+
+    res = tail("1\n2\n3")
+    assert(len(res) == 3)
+    assert(res[0] == "1")
+    assert(res[1] == "2")
+    assert(res[2] == "3")
+
+    res = tail([1, 2, 3])
+    assert(len(res) == 3)
+    assert(res[0] == 1)
+    assert(res[1] == 2)
+    assert(res[2] == 3)
+
+    res = tail([1, 2, 3, 4, 5, 6, 7])
+    assert(len(res) == 5)
+    assert(res[0] == 3)
+    assert(res[1] == 4)
+    assert(res[2] == 5)
+    assert(res[3] == 6)
+    assert(res[4] == 7)
+
+    res = tail([1, 2, 3, 4, 5, 6, 7], { n: 3 })
+    assert(len(res) == 3)
+    assert(res[0] == 5)
+    assert(res[1] == 6)
+    assert(res[2] == 7)
+end
+
+def caseHead():
+    puts("$header head")
+
+    res = head("1\n2\n3")
+    assert(len(res) == 3)
+    assert(res[0] == "1")
+    assert(res[1] == "2")
+    assert(res[2] == "3")
+
+    res = head([1, 2, 3])
+    assert(len(res) == 3)
+    assert(res[0] == 1)
+    assert(res[1] == 2)
+    assert(res[2] == 3)
+
+    res = head([1, 2, 3, 4, 5, 6, 7])
+    assert(len(res) == 5)
+    assert(res[0] == 1)
+    assert(res[1] == 2)
+    assert(res[2] == 3)
+    assert(res[3] == 4)
+    assert(res[4] == 5)
+
+    res = head([1, 2, 3, 4, 5, 6, 7], { n: 3 })
+    assert(len(res) == 3)
+    assert(res[0] == 1)
+    assert(res[1] == 2)
+    assert(res[2] == 3)
+end
+
+def main(case):
+    run(case, {
+        "write": caseWrite,
+        "cat": caseCat,
+        "grep": caseGrep,
+        "sort": caseSort,
+        "sortlines": caseSortlines,
+        "tail": caseTail,
+        "head": caseHead,
+    })
+end
+@}

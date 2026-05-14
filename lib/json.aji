@@ -1,0 +1,32 @@
+{@
+/* JSON module
+ * Since: 2021/11/17 
+ */
+from "lib/stream.aji" import Stream
+
+/*
+{
+    "a": "string",
+    "b": [1, 2, 3],
+    "c": {
+        "ca": 1,
+    },
+}
+
+or
+
+[
+    0,
+    "string",
+    [1, 2, 3],
+]
+*/
+struct JSON:
+    strm = nil
+
+    met parse(self, text):
+        self.strm = Stream.new(text)
+    end
+end
+
+@}

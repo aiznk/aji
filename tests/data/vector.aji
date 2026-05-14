@@ -1,0 +1,185 @@
+{@
+header = "Test data/vec"
+
+def case1():
+    puts("$header case1")
+
+    a = [1, 2, 3]
+    b = 2
+
+    assert(a.has(1) == true)
+    assert(a.has(b) == true)
+    assert(a.has(3) == true)
+    assert(a.has(4) == false)
+
+    assert(a.has([1, b]) == true)
+    assert(a.has([b, 3, 4]) == true)
+    assert(a.has([4, 5]) == false)
+end
+
+def case2():
+    puts("$header case2")
+
+    a = [1, 2, 3]
+
+    assert(a[0] == 1)
+    assert(a[1] == 2)
+    assert(a[2] == 3)
+    assert(len(a) == 3)
+
+    a.push(4)
+
+    assert(a[3] == 4)
+    assert(len(a) == 4)
+    assert(a.pop() == 4)
+end
+
+def case3():
+    puts("$header case3")
+
+    a = [1, 2, 3]
+    b = [4, 5, 6]
+
+    a.extend(b)
+    assert(len(a) == 6)
+    assert(a[0] == 1)
+    assert(a[1] == 2)
+    assert(a[2] == 3)
+    assert(a[3] == 4)
+    assert(a[4] == 5)
+    assert(a[5] == 6)
+
+    c = []
+    a.extend(c)
+    assert(len(a) == 6)
+
+    a = []
+    b = [4, 5, 6]
+    a.extend(b)
+    assert(len(a) == 3)
+    assert(a[0] == 4)
+    assert(a[1] == 5)
+    assert(a[2] == 6)
+
+    a = [1, 2]
+    a.extend(a)
+    assert(len(a) == 4)
+    assert(a[0] == 1)
+    assert(a[1] == 2)
+    assert(a[2] == 1)
+    assert(a[3] == 2)
+end
+
+def case4():
+    puts("$header case4")
+
+    a = [1, 2]
+    a.insert(0, 3)
+    assert(len(a) == 3)
+    assert(a[0] == 3)
+    assert(a[1] == 1)
+    assert(a[2] == 2)
+
+    a = [1, 2]
+    i = 1
+    a.insert(i, 3)
+    assert(len(a) == 3)
+    assert(a[0] == 1)
+    assert(a[1] == 3)
+    assert(a[2] == 2)
+
+    a = [1, 2]
+    a.insert(2, 3)
+    assert(len(a) == 3)
+    assert(a[0] == 1)
+    assert(a[1] == 2)
+    assert(a[2] == 3)
+
+    a = [1, 2]
+    d = { index: 0 }
+    a.insert(d.index, 3)
+    assert(len(a) == 3)
+    assert(a[0] == 3)
+    assert(a[1] == 1)
+    assert(a[2] == 2)
+
+    try:
+        a = [1, 2]
+        a.insert(0, 1, 2)
+    catch ArgumentsError as e:
+        assert(e.what() == "need two arguments")
+    end
+
+    try:
+        a = [1, 2]
+        a.insert(-1, nil)
+    catch IndexError as e:
+        assert(e.what() == "invalid index")
+    end
+
+    try:
+        a = [1, 2]
+        a.insert(3, nil)
+    catch IndexError as e:
+        assert(e.what() == "invalid index")
+    end
+end
+
+def case5():
+    puts("$header case5")
+
+    a = [1, 2]
+    assert(a.find(1) == 0)
+    assert(a.find(2) == 1)
+    assert(a.find(3) == -1)
+
+    a = ["a", "b"]
+    assert(a.find("a") == 0)
+    assert(a.find("b") == 1)
+    assert(a.find("c") == -1)
+end
+
+def case6():
+    puts("$header case6")
+
+    a = [1, 2]
+    vec1 = []
+    vec2 = vec1
+    for i = 0; i < 10; i += 1:
+        vec1.push(i)
+        vec2.push(i + 100)
+    end
+    s = "[0, 100, 1, 101, 2, 102, 3, 103, 4, 104, 5, 105, 6, 106, 7, 107, 8, 108, 9, 109]"
+    assert(Str(vec1) == s)
+    assert(Str(vec2) == s)
+end
+
+def case7():
+    struct A:
+        childs = []
+    end
+
+    a = A()
+    a.childs.push(a)
+    a.childs.push(a)
+    a.childs.push(A())
+    a.childs.push(A())
+
+    assert(len(a.childs) == 4)
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+    "case5": case5,
+    "case6": case6,
+    "case7": case7,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

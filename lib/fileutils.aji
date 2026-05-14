@@ -1,0 +1,91 @@
+{@
+import "os" as os
+from "textfile" import TextFile
+
+/**
+ * Count newlines of file 
+ *
+ * @param[in] {Str} fname Target file path
+ *
+ * @return {Int} Number of newlines
+ */
+def nl(fname):
+    fin = TextFile.open(fname, "r")
+    lines = fin.readLines()
+    n = len(lines)
+    fin.close()
+    return n
+end
+
+/**
+ * TODO: test
+ * 
+ * Concatenate files to destination file
+ * 
+ * @param[out] {Str} dstFname Destination file path
+ * @param[in] {Vec} srcFnames Source file pathes
+ */
+def concat(dstFname, srcFnames):
+    s = ""
+
+    for i = 0; i < len(srcFnames); i += 1:
+        srcFname = srcFnames[i]
+        fin = open(srcFname, "r")
+        s += fin.read()
+        fin.close()
+    end
+
+    fout = open(dstFname, "w")
+    fout.write(s)
+    fout.close()
+end
+
+/**
+ * @brief Get file size
+ * 
+ * @param  {Str} fname File path
+ * @return {Int} Number of file size
+ */
+def fsize(fname):
+    try:
+        fin = open(fname, "rb")
+    catch OSError as e:
+        throw e
+    end
+
+    fin.seek(0, os.SEEK_END)
+    size = fin.tell()
+    fin.close()
+    return size
+end
+
+/**
+ * Check exists of the file
+ * If file exists then return true else return false
+ * 
+ * @param {Str} fname File path 
+ * @return {Bool}
+ */
+def exists(fname):
+    try:
+        fin = open(fname, "rt")
+    catch OSError:
+        return false
+    end
+
+    fin.close()
+    return true
+end
+
+/**
+ * Touch file
+ * 
+ * @param {Str} fname File path
+ */
+def touch(fname):
+    if not exists(fname):
+        fout = open(fname, "wt")
+        fout.close()
+    end
+end
+@}

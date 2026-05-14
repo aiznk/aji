@@ -1,0 +1,51 @@
+{@ // main.aji
+from "samples/mysite/models" import Request
+from "samples/mysite/routes" import routes
+
+def usage():
+    puts("Draw mysite homepage.
+
+Usage:
+
+    aji main.aji [options]...
+
+The options are:
+
+    -h, --help    Show usage.
+    --path        Path of site (/, /about, etc)
+    --method      Method (GET, POST, etc)
+")
+end
+
+def main():
+    if opts.has("h") or opts.has("help"):
+        usage()
+        exit(0)
+    end
+
+    path = opts.get("path")
+    method = opts.get("method")
+    data = opts.get("data") or ""
+    needUsage = not (path and method)
+    if needUsage:
+        usage()
+        exit(0)
+    end
+
+    request = Request.new(path, method, data)
+
+    out, err = nil, nil
+    view = routes.get(path, nil)
+    if view:
+        out, err = view(request)
+    end
+
+    if err != nil:
+        puts(err)
+    else:
+        puts(out)
+    end
+end
+
+main()
+@}

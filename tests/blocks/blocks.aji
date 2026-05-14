@@ -1,0 +1,16 @@
+{@
+header = "Test blocks/blocks"
+
+def case1():
+    puts("$header case1")
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

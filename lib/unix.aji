@@ -1,0 +1,290 @@
+{@
+import "os"
+from "sort" import bubbleSort
+from "text" import join
+
+/**
+ * Write content to file or files
+ * 
+ * @param[in] {Str} in Content
+ * @param[in] {Str|Vec} fnames The file name of The file names
+ */
+def write(in, fnames):
+    mode = "wb"
+    if type(in) == Str:
+        mode = "wt"
+    end
+
+    if type(fnames) == Vec:
+        for i = 0; i < len(fnames); i += 1:
+            fname = fnames[i]
+            try:
+                fout = open(fname, mode)
+            catch OSError as e:
+                throw OSError("failed to open \"$fname\"")
+            end
+            fout.write(in)
+            fout.close()
+        end
+    elif type(fnames) == Str:
+        try:
+            fout = open(fnames, mode)
+        catch OSError as e:
+            throw OSError("can't open \"$fnames\". " + e.what())
+        end
+        fout.write(in)
+        fout.close()
+    else:
+        throw TypeError("invalid fnames type")
+    end
+end
+
+/**
+ * Concatenate files
+ * 
+ * @param {Str|Vec} fnames The file name of the file names
+ * @return {Str} Result text
+ */
+def cat(fnames):
+    s = ""
+
+    if type(fnames) == Vec:
+        for i = 0; i < len(fnames); i += 1:
+            fname = fnames[i]
+            if fname == "-":
+                s += stdin.read()
+            else:
+                fin = open(fname, "r")
+                s += fin.read()
+                fin.close()
+            end
+        end
+    elif type(fnames) == Str and len(fnames):
+        fin = open(fnames, "r")
+        s += fin.read()
+        fin.close()
+    elif (type(fnames) == Str and not len(fnames)) or
+         (type(fnames) == Nil):
+        s += stdin.read()
+    end
+
+    return s
+end
+
+/**
+ * Grep lines of content by target text
+ * 
+ * @param[in] {Str} in Content
+ * @param[in] {Str} target Target text
+ * @return {Vec} Grepped lines
+ */
+def grep(in, target):
+    dst = []
+
+    if type(in) == Str:
+        lines = in.split("\n")
+    elif type(in) == Vec:
+        lines = in
+    else:
+        throw TypeError("invalid input type")
+    end
+
+    for i = 0; i < len(lines); i += 1:
+        line = lines[i]
+
+        for j = 0; j < len(line); j += 1:
+            c = line[j]
+
+            if c == target[0]:
+                match = true
+                for k = j, m = 0;
+                    k < len(line) and m < len(target);
+                    k += 1, m += 1:
+                    if line[k] != target[m]:
+                        match = false
+                        break
+                    end
+                end
+                if match:
+                    dst.push(line)
+                end
+            end
+        end
+    end
+    return dst
+end
+
+/**
+ * Show list of path
+ * 
+ * @param[in] {Str} path The filesystem path
+ * @return {Vec} The file names
+ */
+def ls(path):
+    return os.listdir(path)
+end
+
+/**
+ * Make directory
+ * 
+ * @param[in] {Str} path The filesystem path
+ */
+def mkdir(path):
+    os.mkdir(path)
+end
+
+/**
+ * TODO: imp me!
+ * 
+ * Remove files
+ *
+ * @param[in] {Str} The filesystem path
+ */
+def rm(path):
+    throw RuntimeError("TODO")
+end
+
+def _sortAsc(a, b):
+    ta = type(a)
+    tb = type(b)
+    if ta == Str and tb == Str:
+        if len(a) == 0 and len(b) == 0:
+            return false
+        elif len(a) == 0 and len(b):
+            return true
+        elif len(a) and len(b) == 0:
+            return false
+        end
+        return ord(a[0]) < ord(b[0])
+    elif (ta == Int and tb == Int) or
+         (ta == Float and tb == Float):
+        return a < b
+    else:
+        throw TypeError("invalid element type")
+    end
+end
+
+def _sortDesc(a, b):
+    ta = type(a)
+    tb = type(b)
+    if ta == Str and tb == Str: 
+        if len(a) == 0 and len(b) == 0:
+            return true
+        elif len(a) == 0 and len(b):
+            return false
+        elif len(a) and len(b) == 0:
+            return true
+        end
+        return ord(a[0]) > ord(b[0])
+    elif (ta == Int and tb == Int) or
+         (ta == Float and tb == Float):
+        return a > b
+    else:
+        throw TypeError("invalid element type")
+    end
+end
+
+/**
+ * Sort vector
+ * 
+ * @param[in] {Vec} vec Target vector
+ * @param[in] {Dict} opts The options for sort
+ * @return {Vec} Sortted vector
+ */
+def sort(vec, opts):
+    compar = _sortDesc
+    if opts and opts.get("r"):
+        compar = _sortAsc
+    end
+    return bubbleSort(vec, compar)
+end
+
+/**
+ * Sort lines of file of the file name 
+ *
+ * @param[in] {Str} fname The file name
+ * @return {Str} Text of sortted lines
+ */
+def sortlines(fname, opts):
+    r = opts and opts.get("r")
+    return cat(fname) # 
+        $r.split("\n") # 
+        sort($r, { "r": r }) # 
+        join("\n", $r)
+end
+
+/**
+ * Get tail lines 
+ *
+ * The options are:
+ * 
+ *     n ... Number of get lines
+ *
+ * @return {Vec} Vector of lines
+ */
+def tail(data, opts):
+    if type(data) == Str:
+        v = data.split("\n")
+    elif type(data) == Vec:
+        v = data
+    else:
+        throw TypeError("invalid data type")
+    end
+
+    if opts:
+        n = opts.get("n") or 5
+    else:
+        n = 5
+    end
+
+    if len(v) > n:
+        a = len(v) - n
+        b = len(v)
+    else:
+        a = 0
+        b = len(v)
+    end
+
+    dst = []
+    for i = a; i < b; i += 1:
+        dst.push(v[i])
+    end
+
+    return dst
+end
+
+/**
+ * Get head lines 
+ *
+ * The options are:
+ * 
+ *     n ... Number of get lines
+ *
+ * @return {Vec} Vector of lines
+ */
+def head(data, opts):
+    if type(data) == Str:
+        v = data.split("\n")
+    elif type(data) == Vec:
+        v = data
+    else:
+        throw TypeError("invalid data type")
+    end
+
+    if opts:
+        n = opts.get("n") or 5
+    else:
+        n = 5
+    end
+    if n > len(v):
+        n = len(v)
+    end
+
+    dst = []
+    for i = 0; i < n; i += 1:
+        dst.push(v[i])
+    end
+
+    return dst
+end
+@}

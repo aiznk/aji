@@ -1,0 +1,4 @@
+{@
+    import "samples/errors/module.aji" as mod
+    mod.func()
+@}

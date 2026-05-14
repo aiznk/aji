@@ -1,0 +1,11 @@
+{@
+    import "socket"
+
+    sock = socket.open(opts.args(1), "tcp-client")
+    sock.send("GET / HTTP/1.1\r\n\r\n")
+    
+    s = sock.recv(1024)
+    print(s)
+
+    sock.close()
+@}

@@ -1,0 +1,583 @@
+{@
+from "tests/utils" import run
+
+def case1():
+    puts("Test struct/struct case1")
+
+    struct Animal:
+        name = nil
+        age = nil
+    end
+
+    animal = Animal("Tama", 20)
+
+    assert(animal.name == "Tama")
+    assert(animal.age == 20)
+end
+
+def case2():
+    puts("Test struct/struct case2")
+
+    struct S:
+        met f(self):
+            S()
+        end
+    end
+
+    S().f()
+
+    struct Animal:
+        struct Head:
+            eyes = 2
+            mouth = 1
+        end
+
+        def getEyes():
+            return Animal.Head().eyes
+        end
+
+        met getMouth(self):
+            animal = Animal()
+            head = animal.Head()
+            return head.mouth
+        end
+    end
+
+    assert(Animal.getEyes() == 2)
+    assert(Animal().getMouth() == 1)
+end
+
+def case3():
+    puts("Test struct/struct case3")
+
+    struct Head:
+        eyes = 2
+        mouth = 1
+    end
+
+    struct Animal:
+        def new(eyes, mouth):
+            self = Animal()
+            self.head = Head(eyes, mouth)
+            return self
+        end
+
+        met getEyes(self):
+            return self.head.eyes
+        end
+
+        met getMouth(self):
+            return self.head.mouth
+        end
+    end
+
+    animal = Animal.new(3, 2)
+    assert(animal.getEyes() == 3)
+    assert(animal.getMouth() == 2)
+end
+
+def case4():
+    puts("Test struct/struct case4")
+
+    struct Calculator:
+        met calc(self, lhs, op, rhs):
+            if op == "+":
+                return lhs + rhs
+            elif op == "-":
+                return lhs - rhs
+            end
+        end
+    end
+
+    c = Calculator()
+    assert(c.calc(10, "+", 5) == 15)
+    assert(c.calc(10, "-", 5) == 5)
+end
+
+def case5():
+    puts("Test struct/struct case5")
+
+    struct A:
+        a = nil
+
+        def new():
+            self = A()
+            self.a = A()
+            self.a.a = A()
+            self.a.a.a = 1
+            return self
+        end
+    end
+
+    a = A.new()
+    assert(a.a.a.a == 1)
+end
+
+def case6():
+    puts("Test struct/struct case6")
+
+    struct File:
+        fileno = nil
+    end
+
+    struct TextFile:
+        extract(File)
+    end
+
+    f = TextFile(1)
+    assert(f.fileno == 1)
+
+    struct Walkable:
+        met walk(self):
+            return 1
+        end
+    end
+
+    struct Swimable:
+        met swim(self):
+            return 2
+        end
+    end
+
+    struct Animal:
+        name = "Tama"
+        extract(Walkable, Swimable)
+    end
+
+    a = Animal()
+    assert(a.name == "Tama")
+    assert(a.walk() == 1)
+    assert(a.swim() == 2)
+end
+
+def case7():
+    struct Human:
+        hp = 100
+        power = 10
+        status = "alive"
+    end
+
+    struct Game:
+        frame = 0
+        humans = []
+        maxHumans = 10
+
+        def new():
+            self = Game()
+
+            for i = 0; i < self.maxHumans; i += 1:
+                human = Human()
+                self.humans.push(human)
+            end
+
+            return self
+        end
+
+        met update(self):
+            if self.frame % 4 == 0:
+                h1 = self.humans[0]
+                h2 = self.humans[1]
+                h1.hp -= h2.power
+            end
+            if self.checkGameOver():
+                return false
+            end
+            self.frame += 1
+            return true
+        end
+
+        met checkGameOver(self):
+            alived = false
+            for i = 0; i < len(self.humans); i += 1:
+                h = self.humans[i]
+                if h.hp <= 0:
+                    h.status = "died"
+                end
+                if h.status == "alive":
+                    alived = true
+                end
+            end
+            return not alived
+        end
+    end
+
+    game = Game.new()
+    for i = 0; i < 10; i += 1:
+        game.update()
+    end
+end
+
+def case8():
+    puts("Test struct/struct case8")
+
+    struct Animal:
+        met swim(self):
+            return "swiming"
+        end
+    end
+
+    assert(Animal.swim() == "swiming")
+    assert(Animal().swim() == "swiming")
+
+    struct A:
+        a = 1
+        met inc(self):
+            self.a += 1
+        end
+    end
+
+    a = A()
+    assert(a.a == 1)
+    a.inc()
+    assert(a.a == 2)
+end
+
+def case9():
+    puts("Test struct/struct case9")
+
+    b = 100 
+    
+    def f3():
+        return 3
+    end
+
+    c = 200
+
+    struct A:
+        b = 1
+
+        def f1():
+            return b
+        end
+
+        met f2(self):
+            return self.b
+        end
+
+        met f3(self):
+            return c
+        end
+
+        met f4(self):
+            d = 300
+            return d
+        end
+    end
+
+    a = A()
+    // assert(a.f1() == 100)  // selfつけなくても取得できちゃう
+    assert(a.f2() == 1)  // selfつけても取得できる
+    a.b = 2  // インスタンス変数の値を変える
+    // assert(a.f1() == 100)  // クラス変数にアクセスするので値は変わらない
+    assert(a.f2() == 2)  // self付けた場合はインスタンス変数にアクセスできる
+
+    assert(a.f3() == 200)
+    assert(a.f4() == 300)
+end
+
+def case10():
+    puts("Test struct/struct case10")
+
+    struct S:
+        a = 1
+        met inc(self):
+            self.a += 1
+        end
+    end
+
+    S.inc()
+    s = S()
+    s.inc()
+    assert(s.a == 3)
+end
+
+def case11():
+    puts("Test struct/struct case11")
+
+    struct S:
+        A = 1
+        def f():
+            return S.A
+        end
+    end
+
+    assert(S.A == 1)
+    assert(S.f() == 1)
+end
+
+def case12():
+    puts("Test struct/struct case12")
+
+    struct S:
+        A = 1
+        def f1():
+            def f2():
+                return S.A
+            end
+            return f2()
+        end
+    end
+
+    assert(S.A == 1)
+    assert(S.f1() == 1)
+
+    struct S:
+        sum = 0
+        for i = 0; i < 4; i += 1:
+            sum += i
+        end
+
+        met f1(self):
+            return self.sum
+        end
+
+        met f2(self):
+            return S.sum
+        end
+    end
+
+    s = S()
+    assert(s.f1() == 6)
+    assert(s.f2() == 6)
+end
+
+def case14():
+    puts("Test struct/struct case14")
+
+    struct S:
+        a = 0
+
+        def inc():
+            S.a += 1
+        end
+    end
+
+    assert(S.a == 0)
+    S.inc()
+    assert(S.a == 1)
+    S.a += 1
+    assert(S.a == 2)
+end
+
+def case15():
+    puts("Test struct/struct case15")
+    
+    struct T:
+        a = 0
+
+        def set():
+            T.a = 1
+        end
+    end
+
+    assert(T.a == 0)
+    T.set()
+    assert(T.a == 1)
+end
+
+def case16():
+    puts("Test struct/struct case16")
+    
+    struct A:
+        aaa = 0
+    end
+
+    struct B:
+        bbb = 0
+    end
+
+    assert(id(A.aaa) != id(B.bbb))
+    a1 = A()
+    A.aaa += 1
+    a2 = A()
+    assert(id(a1.aaa) != id(a2.aaa))
+    assert(a1.aaa == 0)
+    assert(a2.aaa == 1)
+end
+
+def case17():
+    puts("Test struct/struct case17")
+    
+    struct Article:
+        title = nil
+        content = nil
+    end
+
+    article = Article("The title", "The content")
+
+    def func(context):
+        assert(context.article.title == "The title")
+    end
+
+    d = {
+        "article": article,
+    }
+    func(d)
+end
+
+def case18():
+    puts("Test struct/struct case18")
+    
+    def c1():
+        struct S:
+        end
+        assert(Str(S) == "(struct)")  // S is not defined
+    end
+    c1()
+    // return
+
+    // これもコピーのバグなんじゃない？
+    try:
+        def c1():
+            struct S:
+            end
+            a = 1
+            puts(a)
+            puts(S)  // S is not defined
+        end
+        vec = [c1]
+        vec[0]()
+    catch LookUpError as e:
+        puts(e.what())
+    end
+end
+
+def case19():
+    puts("Test struct/struct case19")
+
+    struct S:
+        a = 1
+        met b(self):
+            return 1
+        end
+
+        met c(self):
+            return 2
+        end
+    end
+
+    s = S()
+    assert(s.b() == 1)
+    assert(s.c() == 2)
+end
+
+def case20():
+    puts("Test struct/struct case20")
+
+    struct S:
+        i = 1
+        met sF(self):
+            struct SS:
+                met ssF(self):
+                    return i
+                end
+            end
+
+            return SS()
+        end
+    end
+
+    s = S()
+    assert(s.sF().ssF() == 1)
+end
+
+def case21():
+    puts("Test struct/struct case21")
+
+    struct Objects:
+        T = nil
+    end
+
+    struct Model:
+        try:
+            objects = Objects(Model)  // Model is not defined
+            assert(0 and "case21")
+        catch LookUpError as e:
+            assert(e.what() == "\"Model\" is not defined")
+        end
+    end
+end
+
+def case22():
+    puts("Test struct/struct case22")
+
+    struct A:
+        met f(self, n):
+            if n >= 2:
+                return n
+            end
+
+            b = A()
+            return b.f(n + 1)
+        end
+    end
+
+    a = A()
+    assert(a.f(0) == 2)
+end
+
+def case23():
+    puts("Test struct/struct case23")
+
+    struct A:
+        x = 1
+    end
+
+    v = [1, 2, 3]
+    a = A()
+    assert(v[a.x] == 2)
+
+    v[a.x] += 10
+    assert(v[a.x] == 12)
+    v[a.x] -= 10
+    assert(v[a.x] == 2)
+    v[a.x] *= 2
+    assert(v[a.x] == 4)
+    v[a.x] /= 2
+    assert(v[a.x] == 2)
+    v[a.x] %= 2
+    assert(v[a.x] == 0)
+end
+
+def case24():
+    puts("Test struct/struct case24")
+
+    struct A:
+        b = nil
+    end
+    a = A()
+
+    a.b, c = 1, 2
+
+    assert(a.b == 1)
+    assert(c == 2)
+end
+
+def main(name):
+    run(name, {
+        "case1": case1,
+        "case2": case2,
+        "case3": case3,
+        "case4": case4,
+        "case5": case5,
+        "case6": case6,
+        "case7": case7,
+        "case8": case8,
+        "case9": case9,
+        "case10": case10,
+        "case11": case11,
+        "case12": case12,
+        "case14": case14,
+        "case15": case15,
+        "case16": case16,
+        "case17": case17,
+        "case18": case18,
+        "case19": case19,
+        "case20": case20,
+        "case21": case21,
+        "case22": case22,
+        "case23": case23,
+        "case24": case24,
+    })
+end
+@}

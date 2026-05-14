@@ -1,0 +1,51 @@
+{@
+import "sort"
+
+header = "Test lib/sort"
+
+def caseReverse():
+    puts("$header caseReverse")
+
+    assert(sort.reverse("") == "")
+    assert(sort.reverse("123") == "321")
+
+    v = [1, 2, 3]
+    v = sort.reverse(v)
+    assert(v[0] == 3)
+    assert(v[1] == 2)
+    assert(v[2] == 1)
+end
+
+def caseBubbleSort():
+    def compar(a, b):
+        return a > b
+    end
+    v = sort.bubbleSort([3, 5, 1, 4, 2], compar)
+    puts(v)
+    assert(v[0] == 1)
+    assert(v[1] == 2)
+    assert(v[2] == 3)
+    assert(v[3] == 4)
+    assert(v[4] == 5)
+
+    def compar(a, b):
+        return ord(a) > ord(b)
+    end
+    s = sort.bubbleSort("acbed", compar)
+    assert(s[0] == "a")
+    assert(s[1] == "b")
+    assert(s[2] == "c")
+    assert(s[3] == "d")
+    assert(s[4] == "e")
+end
+
+cases = {
+    "reverse": caseReverse,
+    "bubbleSort": caseBubbleSort,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

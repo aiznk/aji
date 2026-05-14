@@ -1,0 +1,150 @@
+{@
+from "stream" import Stream
+from "html" import (Tag, Element)
+
+def case1():
+	puts("Test lib/html case1")
+
+	strm = Stream.new("<a></a>")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "begin")
+
+	strm = Stream.new("< a >< / a >")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "begin")
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "end")
+
+	strm = Stream.new("<a/>")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "closed")
+
+	strm = Stream.new("< a / >")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "closed")
+
+	strm = Stream.new("<a id=abc class=\"def\"></a>")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "begin")
+	assert(tag.attrs["id"] == "abc")
+	assert(tag.attrs["class"] == "def")
+
+	strm = Stream.new("<a id = abc class = \"def\" ></a>")
+	tag = Tag.new()
+	tag.parse(strm)
+	assert(tag.name == "a")
+	assert(tag.type == "begin")
+	assert(tag.attrs["id"] == "abc")
+	assert(tag.attrs["class"] == "def")
+end
+
+def case2():
+	puts("Test lib/html case2")
+
+	strm = Stream.new("<a></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	puts(elem.childs)
+	assert(len(elem.childs) == 1)
+	assert(elem.childs[0].name == "a")
+	
+	strm = Stream.new("<a></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 1)
+	assert(elem.childs[0].name == "a")
+
+	strm = Stream.new("t1<a></a>t2<b/>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 4)
+	assert(elem.childs[0].type == "text")
+	assert(elem.childs[0].text == "t1")
+	assert(elem.childs[1].name == "a")
+	assert(elem.childs[2].type == "text")
+	assert(elem.childs[2].text == "t2")
+	assert(elem.childs[3].name == "b")
+
+	strm = Stream.new("<a></a><b/>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 2)
+	assert(elem.childs[0].name == "a")
+	assert(elem.childs[1].name == "b")
+
+	strm = Stream.new("<a></a><b><b/>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 2)
+	assert(elem.childs[0].name == "a")
+	assert(elem.childs[1].name == "b")
+
+	strm = Stream.new("<a><b></b></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 1)
+	assert(elem.childs[0].name == "a")
+	assert(len(elem.childs[0].childs) == 1)
+	assert(elem.childs[0].childs[0].name == "b")
+
+	strm = Stream.new("<a><b></b><c/></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 1)
+	assert(elem.childs[0].name == "a")
+	assert(len(elem.childs[0].childs) == 2)
+	assert(elem.childs[0].childs[0].name == "b")
+	assert(elem.childs[0].childs[1].name == "c")
+
+	strm = Stream.new("<a id = abc class = \"def\" ></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	assert(len(elem.childs) == 1)
+	assert(elem.childs[0].name == "a")
+	assert(elem.childs[0].attrs["id"] == "abc")
+	assert(elem.childs[0].attrs["class"] == "def")
+end
+
+def case3():
+	puts("Test lib/html case3")
+
+	strm = Stream.new("<a><b/><c/></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	found = elem.findByName("c")
+	assert(found)
+end
+
+def case4():
+	puts("Test lib/html case4")
+	
+	strm = Stream.new("<a><b/><b/></a>")
+	elem = Element.new()
+	elem.parse(strm)
+	elems = elem.findAllByName("b")
+	assert(len(elems) == 2)
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

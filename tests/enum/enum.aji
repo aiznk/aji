@@ -1,0 +1,93 @@
+{@
+header = "Test enum/enum"
+
+def case1():
+    puts("$header case1")
+
+    enum:
+        A = 1
+        B = 2 + 3
+        C = 3
+    end
+
+    assert(A == 1)
+    assert(B == 5)
+    assert(C == 3)
+
+    enum:
+        A = 1
+        A = 2
+        C = 3
+    end
+
+    assert(A == 2)
+    assert(C == 3)
+
+    enum:
+        HEIGHT = 10
+        WIDTH = 20
+        SIZE = HEIGHT * WIDTH
+    end
+
+    assert(SIZE == 200)
+
+    enum Num:
+        H = 10
+        W = 20
+        SIZE = Num.H * Num.W
+        SIZE2 = H * W
+    end
+
+    assert(Num.SIZE == 200)
+    assert(Num.SIZE2 == 200)
+
+    /*
+    try:
+        enum Numm:
+            extract(Num)
+        end
+        assert(0 and "Numm")
+    catch SyntaxError:
+    end
+    */
+
+    enum Num1:
+        A = 1
+        B = 2
+        C = 3
+    end
+
+    assert(Num1.A == 1)
+    assert(Num1.B == 2)
+    assert(Num1.C == 3)
+
+    enum Num2:
+        AA
+        BB
+        CC
+    end
+
+    assert(Num2.AA == 0)
+    assert(Num2.BB == 1)
+    assert(Num2.CC == 2)
+
+    enum Num3:
+        AAA
+        BBB = 10
+        CCC
+    end
+
+    assert(Num3.AAA == 0)
+    assert(Num3.BBB == 10)
+    assert(Num3.CCC == 11)
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

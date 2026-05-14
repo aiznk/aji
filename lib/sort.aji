@@ -1,0 +1,102 @@
+{@
+/* Sort module
+ *
+ * This module contains the functions for sorting algorithm.
+ *
+ * Since: 2022/01/09
+ */
+
+/**
+ * Reverse object
+ * 
+ * @param[in] {Str|Vec} s Object
+ * @return {Str|Vec} Reversed object 
+ */
+def reverse(obj):
+    if type(obj) == Str:
+        dst = ""
+
+        for i = len(obj) - 1; i >= 0; i -= 1:
+            c = obj[i]
+            dst += c
+        end
+
+        return dst
+    elif type(obj) == Vec:
+        dst = []
+
+        for i = len(obj) - 1; i >= 0; i -= 1:
+            el = obj[i]
+            dst.push(el)
+        end
+
+        return dst
+    else:
+        throw TypeError("invalid argument type")
+    end
+end
+
+def toVec(obj):
+    v = []
+    for i = 0; i < len(obj); i += 1:
+        v.push(obj[i])
+    end
+    return v
+end
+
+def toStr(obj):
+    s = ""
+    for i = 0; i < len(obj); i += 1:
+        s += Str(obj[i])
+    end
+    return s
+end
+
+/**
+ * Bubble sort
+ *
+ * @param[in] {Str|Vec} obj Target object
+ * @param[in] {Func} compar The function for comparision
+ * 
+ * @return [description]
+ */
+def bubbleSort(obj, compar):
+    k = 0
+
+    if type(obj) == Str:
+        loop = true
+        v = toVec(obj)
+        ln = len(v)
+        for loop:
+            loop = false
+            for i = 0; i < ln - 1 - k; i += 1:
+                if compar(v[i], v[i + 1]):
+                    tmp = v[i]
+                    v[i] = v[i + 1]
+                    v[i + 1] = tmp
+                    loop = true
+                end 
+            end 
+            k += 1
+        end
+        return toStr(v)
+    elif type(obj) == Vec:
+        loop = true
+        v = toVec(obj)
+        ln = len(v)
+        for loop:
+            loop = false
+            for i = 0; i < ln - 1 - k; i += 1:
+                if compar(v[i], v[i + 1]):
+                    tmp = v[i]
+                    v[i] = v[i + 1]
+                    v[i + 1] = tmp
+                    loop = true
+                end 
+            end 
+            k += 1
+        end
+        return v
+    end
+end
+@}

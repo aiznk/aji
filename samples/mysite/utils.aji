@@ -1,0 +1,17 @@
+{@
+    /**
+     * @brief Render template file by path
+     * 
+     * @param {Request} request 
+     * @param {Str} path The template file path
+     * @param {Dict} context The context of the template file
+     * @return {Vec} [buffer of stdout, buffer of stderr]
+     */
+    def render(request, path, context):
+        fin = open(path, "r")
+        content = fin.read()
+        out, err = dance(content, context)
+        fin.close()
+        return out, err
+    end
+@}

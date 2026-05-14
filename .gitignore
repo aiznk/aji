@@ -1,0 +1,74 @@
+pmm.log
+a.sh
+a.log
+log.txt
+log2.txt
+mmlog.txt
+.git.bfg-report/
+dist/
+tests/tmp/*.txt
+tests/tmp/*.aji
+tests/tmp/*.csv
+tests/tmp/*.json
+tests/tmp/*.xml
+tests/tmp/*.html
+tmp/*.txt
+tmp/*.aji
+tmp/*.csv
+tmp/*.json
+tmp/*.xml
+tmp/*.html
+.vscode/
+tests/.cap/var/*
+*.go
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.d
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+#*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+#*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Dump files
+*.exe.stackdump
+
+# Debug files
+*.dSYM/
+
+# doc/
+doc/note.txt
+build/
+thirdparty/
+test_bak/
+
+*.pyc
+gprof.log
+dll/
+a.aji
+
+
+b.sh

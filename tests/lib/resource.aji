@@ -1,0 +1,23 @@
+{@
+from "resource" import Resource
+
+def case1():
+    puts("Test lib/resource case1")
+
+    rc = Resource()
+    rc.add("aaa", "bbb")
+    rc.add("ccc", "ddd")
+
+    assert(rc.get("aaa") == "bbb")
+    assert(rc.get("ccc") == "ddd")
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

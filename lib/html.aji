@@ -1,0 +1,291 @@
+{@
+from "stream" import Stream
+
+/**
+ * HTML Tag
+ */
+struct Tag:
+    name = nil  // Name
+    type = nil  // Type
+    attrs = {}  // Attributes
+
+    /**
+     * Construct Tag object
+     *
+     * @return {Obj}
+     */
+    def new():
+        return Tag()
+    end
+
+    /**
+     * Check C is tag name?
+     * 
+     * @param[in] {Str} c Character
+     * 
+     * @return {Bool} If C is tag name then return true else 
+     *                return false
+     */
+    met isTagName(self, c):
+        return c.isalpha() or c.isdigit() or c == "_" or c == "-"
+    end
+
+    /**
+     * Check C is attribute key?
+     * 
+     * @param[in] {Str} c Character
+     * 
+     * @return {Bool} If C is attribute key then return true else 
+     *                return false
+     */
+    met isAttrKey(self, c):
+        return c.isalpha() or c.isdigit() or c == "_" or c == "-"
+    end
+
+    /**
+     * Check C is attribute value?
+     * 
+     * @param[in] {Str} c Character
+     * 
+     * @return {Bool} If C is attribute value then return true else 
+     *                return false
+     */
+    met isAttrVal(self, c):
+        return c.isalpha() or c.isdigit() or c == "_" 
+    end
+
+    /**
+     * Parse stream
+     * 
+     * @param[in] {Stream} strm Stream
+     */
+    met parse(self, strm):
+        m = "first"
+        self.name = ""
+        self.type = "begin"
+        attrKey = ""
+        attrVal = ""
+
+        for not strm.eof():
+            c = strm.get()
+            if m == "first":
+                if c == "<":
+                    m = "found-<"
+                end
+            elif m == "found-<":
+                if self.isTagName(c):
+                    self.name += c
+                    m = "read-tag-name"
+                elif c == "/":
+                    self.type = "end"
+                end
+            elif m == "read-tag-name":
+                if self.isTagName(c):
+                    self.name += c
+                elif c == "/":
+                    self.type = "closed"
+                elif c == ">":
+                    break
+                else:
+                    m = "end-read-tag-name"
+                end
+            elif m == "end-read-tag-name":
+                if self.isAttrKey(c):
+                    attrKey += c
+                    m = "attr-key"
+                elif c == "/":
+                    self.type = "closed"
+                elif c == ">":
+                    break
+                end
+            elif m == "attr-key":
+                if self.isAttrKey(c):
+                    attrKey += c
+                elif c == "=":
+                    m = "attr-eq"
+                else:
+                    m = "readed-attr-key"
+                end
+            elif m == "attr-eq":
+                if c == "\"":
+                    m = "attr-val-str"
+                elif self.isAttrVal(c):
+                    attrVal += c
+                    m = "attr-val"
+                elif c == ">":
+                    break
+                end
+            elif m == "readed-attr-key":
+                if c == "=":
+                    m = "attr-eq"
+                end
+            elif m == "attr-val-str":
+                if c == "\"":
+                    self.attrs[attrKey] = attrVal
+                    attrKey = ""
+                    attrVal = ""
+                    m = "end-read-tag-name"
+                else:
+                    attrVal += c
+                end
+            elif m == "attr-val":
+                if self.isAttrVal(c):
+                    attrVal += c
+                else:
+                    strm.prev()
+                    self.attrs[attrKey] = attrVal
+                    attrKey = ""
+                    attrVal = ""                    
+                    m = "end-read-tag-name"
+                end
+            end
+        end
+    end
+end
+
+/**
+ * HTML Element
+ */
+struct Element:
+    name = nil  // Name
+    type = nil  // Type
+    text = nil  // Inner text
+    attr = {}  // Attributes
+    childs = []  // Child elements
+
+    /**
+     * Construct Element object 
+     *
+     * @return {Obj}
+     */
+    def new():
+        return Element()
+    end
+
+    /**
+     * Parse stream
+     * 
+     * @param[in] {Stream} strm Stream 
+     */
+    met parse(self, strm):
+        text = ""
+
+        def storeText():
+            // TODO: remove self
+            // need implement closure instead of function
+            nonlocal text
+
+            if not len(text):
+                return
+            end
+            child = Element.new()
+            child.name = nil
+            child.text = text
+            child.type = "text"
+            self.childs.push(child)
+            text = ""
+        end
+
+        for not strm.eof():
+            c = strm.get()
+            if c == "<":
+                storeText()
+                strm.prev()
+                tag = Tag.new()
+                tag.parse(strm)
+                if tag.type == "begin":
+                    child = Element.new()
+                    child.name = tag.name
+                    child.attrs = tag.attrs
+                    child.parse(strm)
+                    self.childs.push(child)
+                elif tag.type == "end":
+                    return 
+                elif tag.type == "closed":
+                    child = Element.new()
+                    child.name = tag.name
+                    child.attrs = tag.attrs
+                    child.type = "tag"
+                    self.childs.push(child)
+                end
+            else:
+                text += c
+            end
+        end
+
+        storeText()
+    end
+
+    /**
+     * Find element by name
+     * 
+     * @param[in] {Obj} tagName Tag name
+     * 
+     * @return {Obj} Found element
+     */
+    met findByName(self, tagName):
+        for i = 0; i < len(self.childs); i += 1:
+            child = self.childs[i]
+            if child.name == tagName:
+                return child
+            end
+
+            found = child.findByName(tagName)
+            if found:
+                return found
+            end
+        end
+    end
+
+    /**
+     * Find elements by name
+     * 
+     * @param[in] {Str} tagName Tag name
+     * 
+     * @return {Vec} Found elements
+     */
+    met findAllByName(self, tagName):
+        elems = []
+
+        for i = 0; i < len(self.childs); i += 1:
+            child = self.childs[i]
+            if child.name == tagName:
+                elems.push(child)
+            end
+
+            founds = child.findAllByName(tagName)
+            elems.extend(founds)
+        end        
+
+        return elems
+    end
+end
+
+/**
+ * HTML Parser
+ */
+struct HtmlParser:
+    root = nil
+
+    /**
+     * Construct HTMLParser object
+     *
+     * @return {Obj}
+     */
+    def new():
+        return HtmlParser()
+    end
+
+    /**
+     * Parse source
+     * 
+     * @param[in] {Str} src Source strings
+     */
+    met parse(self, src):
+        strm = Stream.new(src)
+        self.root = Element.new()
+        self.root.parse(strm)
+    end
+end
+
+@}

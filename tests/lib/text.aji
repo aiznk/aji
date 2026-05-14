@@ -1,0 +1,92 @@
+{@
+from "text" import (
+    capitalize,
+    format,
+    trailsp,
+    repnl, 
+    join,
+)
+
+header = "Test lib/text"
+
+def caseCapitalize():
+    puts("$header caseCapitalize")
+    
+    s = capitalize("this is a pen. my name is Taro.")
+    assert(s == "This is a pen. My name is Taro.")
+
+    s = capitalize("this is a... pen! my name? is Taro.")
+    assert(s == "This is a... Pen! My name? Is Taro.")
+end
+
+def caseFormat():
+    puts("$header caseFormat")
+    
+    s = format([1, 2, 3, 4])
+    assert(s == "[1, 2, 3, 4]")
+
+    vec = []
+    for i = 0; i < 25; i += 1:
+        vec.push(i)
+    end
+    s = format(vec)
+    assert(s == "[
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+  20, 21, 22, 23, 24
+]")
+
+    d = { "a": 1, "bb": 2, "ccc": 3 }
+    s = format(d)
+    assert(s == "{
+  \"a\": 1,
+  \"bb\": 2,
+  \"ccc\": 3
+}")
+end
+
+def caseTrailsp():
+    puts("$header caseTrailsp")
+
+    assert(trailsp("123") == "123")
+    assert(trailsp("123 ") == "123")
+    assert(trailsp("123     ") == "123")
+    assert(trailsp("  123     ") == "  123")
+    assert(trailsp("  1  23     ") == "  1  23")
+    assert(trailsp("  1  2  3     ") == "  1  2  3")
+    assert(trailsp("123  \n223  \n") == "123\n223\n")
+    assert(trailsp("  1  2  3  \n  2  2  3  \n") == "  1  2  3\n  2  2  3\n")
+    assert(trailsp("  1  2  3　　\n  2  2  3 　\n") == "  1  2  3\n  2  2  3\n")
+    assert(trailsp("\n  \n    \n") == "\n\n\n")
+end
+
+def caseRepnl():
+    puts("$header caseRepnl")
+
+    assert(repnl("", "A") == "")
+    assert(repnl("123", "A") == "123")
+    assert(repnl("123\n", "A") == "123A")
+    assert(repnl("123\n223\n", "A") == "123A223A")
+    assert(repnl("123\r\n223\n323\r", "A") == "123A223A323A")
+end
+
+def caseJoin():
+    puts("$header caseJoin")
+
+    assert(join(",", [1, 2, 3]) == "1,2,3")
+    assert(join(",", []) == "")
+end
+
+cases = {
+    "capitalize": caseCapitalize,
+    "format": caseFormat,
+    "trailsp": caseTrailsp,
+    "repnl": caseRepnl,
+    "join": caseJoin,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

@@ -1,0 +1,11 @@
+{@
+    from "lib/textfile.aji" import TextFile
+
+    f = TextFile()
+    f.open("samples/lib/textfile.aji", "r")
+    lines = f.readLines()
+
+    for i = 0; i < len(lines); i += 1:
+        puts("[" + lines[i].rstrip() + "]")
+    end
+@}

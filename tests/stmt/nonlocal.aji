@@ -1,0 +1,107 @@
+{@
+header = "Test stmt/nonlocal"
+
+def case1():
+    puts("$header case1")
+
+    a = 1
+
+    def f1():
+        a = 2
+        nonlocal a
+    end
+
+    try:
+        f1()
+        assert(0 and "failed")
+    catch SyntaxError as e:
+        assert(e.what() == "name \"a\" is assigned to before nonlocal statement")
+    end
+end
+
+def case2():
+    puts("$header case2")
+
+    a = 1
+
+    struct S:
+        a = 2
+        def f1():
+            a = 3
+            nonlocal a
+            assert(a == 2)
+        end
+    end
+
+    try:
+        S.f1()
+        assert(0 and "failed")
+    catch SyntaxError as e:
+        assert(e.what() == "name \"a\" is assigned to before nonlocal statement")
+    end
+
+    s = S()
+    try:
+        s.f1()
+    catch SyntaxError as e:
+        assert(e.what() == "name \"a\" is assigned to before nonlocal statement")
+    end
+end
+
+def case3():
+    puts("$header case3")
+
+    text = "abc"
+
+    def func():
+        nonlocal text
+        text = ""
+    end
+
+    func()
+    assert(text == "")
+
+    text = "abc"
+
+    struct S:
+        nonlocal text
+        text = ""
+    end
+    
+    assert(text == "")
+end
+
+def case4():
+    puts("$header case4")
+
+    def f1():
+        nonlocal a
+        return a
+    end
+
+    def f2():
+        a = 1
+        return f1()
+    end
+
+    try:
+        f2()
+        assert(0 and "case4")
+    catch LookUpError as e:
+        assert(e.what() == "\"a\" is not defined")
+    end
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

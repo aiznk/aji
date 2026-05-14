@@ -1,0 +1,131 @@
+{@
+from "tests/utils" import run
+import "os"
+
+def globalObjects():
+    puts("Test io/file global-objects")
+
+    // stdin.read()
+    stdout.write("hige")
+    stderr.write("hige")
+end
+
+def case1():
+    puts("Test io/file case1")
+    
+    fin = open("tests/io/file1.txt", "rt")
+    content = fin.read()
+    assert(content == "this is file1 content")
+    fin.close()
+
+    fin = open("tests/io/file1.txt", "rt")
+    content = fin.read(4)
+    assert(content == "this")
+    fin.close()
+
+    fin = open("tests/io/file1.txt", "rt")
+    content = fin.read(1)
+    assert(content == "t")
+    fin.close()    
+
+    fin = open("tests/io/file1.txt", "rt")
+    try:
+        content = fin.read(-1)
+        assert(0 and "error")
+    catch ArgumentsError as e:
+        assert(e.what() == "invalid value of file.read()")
+    end
+    fin.close()    
+
+    fin = open("tests/io/file1.txt", "rt")
+    fin.read()
+    result = fin.read()
+    assert(result == -1)
+    fin.close()
+end
+
+def case2():
+    puts("Test io/file case2")
+
+    fp = open("tests/io/file1.txt", "rt")
+
+    assert(fp.read() == "this is file1 content")
+
+    fp.seek(0, os.SEEK_SET)
+
+    assert(fp.read() == "this is file1 content")
+
+    fp.close()
+end
+
+def case3():
+    puts("Test io/file case3")
+
+    fp = open("tests/io/file1.txt", "rt")
+
+    fp.seek(0, os.SEEK_END)
+    assert(fp.tell() == 21)
+
+    fp.close()
+end
+
+def case4():
+    puts("Test io/file case4")
+
+    stdout.flush()
+end
+
+def case5():
+    puts("Test io/file case5")
+
+    fp = open("tests/io/writefile.txt", "wt")
+    data = Bytes("123")
+    
+    try:
+        fp.write(data)
+    catch TypeError as e:
+        assert(e.what() == "invalid data type. file mode is text mode. needs string data")
+    end
+
+    fp.close()
+end
+
+def case6():
+    puts("Test io/file case6")
+
+    fp = open("tests/io/writefile.txt", "wb")
+    data = "123"
+    
+    try:
+        fp.write(data)
+    catch TypeError as e:
+        assert(e.what() == "invalid data type. file mode is binary mode. needs bytes data")
+    end
+
+    fp.close()
+end
+
+def case7():
+    puts("Test io/file case7")
+
+    fp = open("tests/io/file1.txt", "rb")
+    data = fp.read()
+    
+    assert(type(data) == Bytes)
+
+    fp.close()
+end
+
+def main(name):
+    run(name, {
+        "case1": case1,
+        "case2": case2,
+        "case3": case3,
+        "case4": case4,
+        "case5": case5,
+        "case6": case6,
+        "case7": case7,
+    })
+end
+
+@}

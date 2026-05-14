@@ -1,0 +1,140 @@
+{@
+import "os"
+import "fileutils" as fu
+from "csv" import CSV
+
+/**
+ * Request object 
+ */
+struct Request:
+    path = nil  // path of request
+    method = nil  // method name (GET, POST, etc)
+    data = {}  // post data
+    
+    def new(path, method, data):
+        self = Request()
+        self.path = path
+        self.method = method
+        if data:
+            self.data = self.parseData(data)
+        end
+        return self
+    end
+
+    met parseData(self, data):
+        return {
+            title: "title",
+            content: "content",
+        }
+    end
+end
+
+struct Database:
+    dbFp = nil
+
+    def new(dbPath):
+        self = Database()
+        fu.touch(dbPath)
+        self.dbFp = open(dbPath, "r+t")
+        return self
+    end
+
+    met read(self):
+        self.dbFp.seek(0, os.SEEK_SET)
+        s = self.dbFp.read()
+        self.dbFp.seek(0, os.SEEK_SET)
+        return s
+    end
+
+    met write(self, txt):
+        self.dbFp.seek(0, os.SEEK_SET)
+        self.dbFp.write(txt)
+        self.dbFp.seek(0, os.SEEK_SET)
+    end
+end
+
+db = Database.new("samples/mysite/db.csv")
+
+struct Model:
+    def save(T, obj):
+        global db
+        csvTxt = db.read()
+        csv = CSV.new()
+        csv.parse(csvTxt)
+
+        record = T.toRecord(obj)
+        csv.addRow(record)
+        csvTxt = csv.stringify()
+
+        db.write(csvTxt)
+    end
+
+    def all(T):
+        global db
+        csvTxt = db.read()
+        csv = CSV.new()
+        csv.parse(csvTxt)
+
+        dst = []
+        for i = 0; i < len(csv.rows); i += 1:
+            row = csv.rows[i]
+            obj = T.createObj(row)
+            dst.push(obj)
+        end
+
+        return dst
+    end
+
+    def filter(T, kw, match):
+        global db
+        csvTxt = db.read()
+        csv = CSV.new()
+        csv.parse(csvTxt)
+
+        dst = []
+        for i = 0; i < len(csv.rows); i += 1:
+            row = csv.rows[i]
+            if match(kw, row):
+                obj = T.createObj(row)
+                dst.push(obj)
+            end
+        end
+
+        return dst
+    end
+end
+
+/**
+ * Article object 
+ */
+struct Article:
+    title = nil  // Article title
+    content = nil  // Article content
+
+    def toRecord(obj):
+        return [obj.title, obj.content]
+    end
+
+    def create(kw):
+        obj = Article(kw.title, kw.content)
+        Model.save(Article, obj)
+        return obj
+    end
+
+    def createObj(row):
+        return Article(row[0], row[1])
+    end
+
+    def all():
+        return Model.all(Article)
+    end
+
+    def filter(kw):
+        def match(kw, row):
+            return getattr(kw, "title") == row[0] or
+                   getattr(kw, "content") == row[1]
+        end
+        return Model.filter(Article, kw, match)
+    end
+end
+@}

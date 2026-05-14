@@ -1,0 +1,17 @@
+{@
+    from "samples/mysite/templates/base.aji" import base
+    
+    def about(context) extends base:
+        inject content: @}
+            <h1>About of my homepage</h1>
+            <p>This homepage made by Aji.</p>
+        {@ end
+
+        return super(context)
+    end
+
+    about({
+        "siteName": siteName,
+        "description": description,
+    })
+@}

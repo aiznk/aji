@@ -1,0 +1,16 @@
+{@
+    try:
+        file = open("tests/open/file1.txt", "r")
+        text = file.read()
+        puts(text)
+        file.close()
+    catch OSError as e:
+        puts(e.what())
+    end
+
+    try:
+        file = open("nothing", "r")
+    catch OSError as e:
+        puts(e.what())
+    end
+@}

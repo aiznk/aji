@@ -1,0 +1,10 @@
+{@
+    def vecToUl(vec):
+@}<ul>
+{@
+        for i = 0; i < len(vec); i += 1: @}    <li>{: vec[i] :}</li>
+{@ end
+@}</ul>
+{@
+    end
+@}

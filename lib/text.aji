@@ -1,0 +1,227 @@
+{@
+/* Text lib
+ * Since 2021/11/08
+ */
+
+/**
+ * Capitalize text's sentence.
+ * 
+ * @param[in] {Str} text Source text
+ * 
+ * @return {Str} Capitalized text
+ */
+def capitalize(text):
+    m = 0
+    s = ""
+
+    for i = 0; i < len(text); i += 1:
+        c = text[i]
+        if m == 0:
+            if c.isalpha():
+                s += c.upper()
+                m = 10
+            elif c.isspace():
+                s += c
+            elif c == ".":
+                s += c
+            else:
+                s += c
+                m = 10
+            end
+        elif m == 10:  // read sentence
+            if c == "." or c == "!" or c == "?":
+                m = 0
+                s += c
+            else:
+                s += c
+            end
+        end
+    end
+
+    return s
+end
+
+def _formatVec(vec):
+    s = "["
+    veclen = len(vec)
+    lim = 10
+
+    if veclen < lim:
+        for i = 0; i < veclen - 1; i += 1:
+            el = vec[i]
+            s += Str(el) + ", "
+        end
+        if veclen:
+            s += Str(vec[veclen - 1])
+        end
+        s += "]"
+    else:
+        s += "\n  "
+
+        for i = 0; i < veclen - 1; i += 1:
+            if i > 0 and i % lim == 0:
+                s = s.rstrip()
+                s += "\n  "
+            end
+            el = vec[i]
+            s += Str(el) + ", "
+        end
+        if veclen:
+            s += Str(vec[veclen - 1])
+        end
+        s += "\n]"
+    end
+
+    return s
+end
+
+def _formatDict(d):
+    keys = d.keys()
+    s = "{\n"
+
+    for i = 0; i < len(keys) - 1; i += 1:
+        k = keys[i]
+        v = d[k]
+        s += "  \"$k\": $v,\n"
+    end
+    if len(keys):
+        k = keys[len(keys) - 1]
+        v = d[k]
+        s += "  \"$k\": $v\n"
+    end
+
+    s += "}"
+    return s
+end
+
+/**
+ * Create formatted text from object
+ *
+ * @param[in] {Obj} Target object
+ *
+ * @return {Str} Formatted text
+ */
+def format(obj):
+    if type(obj) == Vec:
+        return _formatVec(obj)
+    elif type(obj) == Dict:  // TODO
+        return _formatDict(obj)
+    end
+end
+
+/**
+ * Remove trailing spaces
+ * 
+ * @param[in] {Str} s Source text
+ * @return {Str} Fix text
+ */
+def trailsp(s):
+    m = "first"
+    tmp = ""
+    dst = ""
+
+    for i = 0; i < len(s); i += 1:
+        c1 = s[i]
+        if i < len(s) - 1:
+            c2 = s[i + 1]
+        else:
+            c2 = ""
+        end
+        // puts("[$c1] [$c2] [$m]")
+        if m == "first":
+            if c1 == " " or c1 == "　":
+                tmp = c1
+                m = "space"
+            else:
+                dst += c1
+            end
+        elif m == "space":
+            if c1 == " " or c1 == "　":
+                tmp += c1
+            elif c1 == "\r" and c2 == "\n":
+                tmp = ""
+                dst += "\r\n"
+                i += 1
+                m = "first"
+            elif c1 == "\r":
+                tmp = ""
+                dst += "\r"
+                m = "first"
+            elif c1 == "\n":
+                tmp = ""
+                dst += "\n"
+                m = "first"
+            else:
+                dst += tmp
+                tmp = ""
+                dst += c1
+                m = "first"
+            end
+        end
+    end
+
+    return dst
+end
+
+/**
+ * Replace newlines by string
+ * 
+ * @param[in] {Str} s        Target text
+ * @param[in] {Str} replaced String for replace
+ * @return {Str} Replaced text
+ */
+def repnl(s, replaced):
+    if type(s) != Str:
+        throw TypeError("invalid argument s")
+    end
+    if type(replaced) != Str:
+        throw TypeError("invalid argument replaced")
+    end
+
+    dst = ""
+
+    for i = 0; i < len(s); i += 1:
+        c1 = s[i]
+        if i < len(s) - 1:
+            c2 = s[i + 1]
+        else:
+            c2 = ""
+        end
+
+        if c1 == "\r" and c2 == "\n":
+            i += 1
+            dst += replaced
+        elif c1 == "\r" or c1 == "\n":
+            dst += replaced
+        else:
+            dst += c1
+        end
+    end
+
+    return dst
+end
+
+/**
+ * @deprecated
+ * 2022-05-02
+ * Use Str.join() instead
+ * 
+ * Join lines by separator
+ * 
+ * @param[in] {Str} sep 
+ * @param[in] {Vec} vec 
+ * @return {Str} 
+ */
+def join(sep, vec):
+    s = ""
+
+    for i = 0; i < len(vec) - 1; i += 1:
+        s += Str(vec[i]) + sep
+    end
+    if len(vec):
+        s += Str(vec[len(vec) - 1])
+    end
+
+    return s
+end
+@}

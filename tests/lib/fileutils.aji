@@ -1,0 +1,30 @@
+{@
+from "fileutils" import (
+    nl,
+    fsize,
+)
+
+header = "Test lib/fileutils"
+
+def case1():
+    puts("$header case1")
+    
+    puts(nl("lib/fileutils.aji"))
+end
+
+def caseFsize():
+    puts("$header caseFsize")
+
+    assert(fsize("tests/lib/fsize.txt") == 10)
+end
+
+cases = {
+    "case1": case1,
+    "caseFsize": caseFsize,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

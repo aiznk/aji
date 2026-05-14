@@ -1,0 +1,340 @@
+{@
+
+enum Cmd:
+    EOF = -1
+    UNKNOWN
+    A
+    S
+    D
+    W
+    ENTER
+    ONE
+    TWO
+    THREE
+end
+
+def inputCmd(prompt):
+    print(prompt)
+
+    cmd = ""
+    for:
+        c = stdin.read(1)
+        if c == -1:
+            cmd = -1
+            break
+        end
+
+        cmd += c
+        if c == "\n":
+            break
+        end
+    end
+
+    if cmd == -1:
+        cmd = Cmd.EOF
+    elif cmd == "s\n":
+        cmd = Cmd.S
+    elif cmd == "w\n":
+        cmd = Cmd.W
+    elif cmd == "a\n":
+        cmd = Cmd.A
+    elif cmd == "d\n":
+        cmd = Cmd.D
+    elif cmd == "\n":
+        cmd = Cmd.ENTER
+    elif cmd == "1\n":
+        cmd = Cmd.ONE
+    elif cmd == "2\n":
+        cmd = Cmd.TWO
+    elif cmd == "3\n":
+        cmd = Cmd.THREE
+    else:
+        cmd = Cmd.UNKNOWN
+    end
+
+    return cmd
+end
+
+struct Scene:
+    prot = []
+    protIndex = 0
+    loop = true
+    lastResult = true
+    nextScene = nil
+
+    met line(self):
+        puts("--------------------------------------------------")
+    end
+
+    met update(self):
+        if not self.loop:
+            return self.lastResult, self.nextScene
+        end
+
+        cmd = inputCmd("command > ")
+        if cmd == Cmd.EOF:
+            return false, self
+        elif cmd == Cmd.ENTER:
+            self.protIndex += 1
+            if self.protIndex >= len(self.prot):
+                return false, self
+            end
+        end
+        return true, self
+    end
+
+    met draw(self):
+        prot = self.prot[self.protIndex]
+        self.line()
+        puts(prot.text)
+        puts()
+
+        if has(prot, "choices"):
+            if self.consumeChoices(prot):
+                puts(prot.ok.text)
+                self.loop = false
+                self.nextScene = prot.ok.nextScene
+            else:
+                puts(prot.fail.text)
+                self.loop = false
+                self.nextScene = prot.fail.nextScene
+            end
+        else:
+            puts("v Enter")
+        end
+
+        self.line()
+    end
+
+    met consumeChoices(self, prot):
+        for i = 0; i < len(prot.choices); i += 1:
+            puts(prot.choices[i])
+        end
+        puts()
+
+        for:
+            n = 0
+            cmd = inputCmd("number > ")
+            if cmd == Cmd.EOF:
+                self.loop = false
+            elif cmd == Cmd.ONE:
+                n = 1
+            elif cmd == Cmd.TWO:
+                n = 2
+            elif cmd == Cmd.THREE:
+                n = 3
+            else:
+                continue
+            end
+
+            return prot.hope == n
+            break
+        end
+    end
+end
+
+struct GameOverScene:
+    extract(Scene)
+    prot = [
+        {
+            text: "少女「残念ですが、あなたは新世界にふさわいくないようです」\n" + \
+                  "太郎「そんな……俺も連れてってくれよ！」"
+        },
+        {
+            text: "少女「新世界に連れていく代わりにあなたをこちらの世界にご案内しましょう」\n" + \
+                  "太郎「何の世界だ？」"
+        },
+        {
+            text: "少女「……」\n" + \
+                  "太郎「……何の世界なんだ？」"
+        },
+        {
+            text: "太郎「ま、まさか」\n" + \
+                  "少女「……そうです。無限の世界へご案内……」"
+        },
+        {
+            text: "太郎「う、うわあああ！　いやだああああ！」\n" + \
+                  "\n" + \
+                  "太郎は暗黒の次元ホールに吸い込まれていった。\n" + \
+                  "そこは無限の世界。一度は言ったら出られない……。"
+        },
+    ]
+end
+
+struct MyCountryScene:
+    extract(Scene)
+    prot = [
+        {
+            text: "少女「あなたはどうやら新世界にふさわしいようですね」\n" + \
+                  "太郎「そうだろう。新世界で一緒に家庭を築こう」"
+        },
+        {
+            text: "少女「ではこちらへどうぞ」\n" + \
+                  "\n" + \
+                  "少女が空間に手をかざすと青く光る異次元ホールが開いた。"
+        },
+        {
+            text: "少女「この穴に入ってください」\n" + \
+                  "太郎「御意」\n" + \
+                  "\n" + \
+                  "太郎が異次元ホールに入ると太郎の周りの景色が高速に流れ始めた。\n" + \
+                  "みるみるうちに太郎のいた世界がその姿を変えていく。\n" + \
+                  "\n" + \
+                  "太郎「うわあああああ」"
+        },
+    ]
+end
+
+struct FirstScene:
+    extract(Scene)
+    prot = [
+        {
+            text: "太郎「はぁ、毎日暇だな」\n" + \
+                  "\n" + \
+                  "太郎はそう言うと部屋の中で天井を見上げた。"
+        },
+        {
+            text: "太郎「俺は新世界のモブになりたい」\n" + \
+                  "太郎「モブになって責任のない楽しい人生を送りたい」"
+        },
+        {
+            text: "太郎「はぁ、どこかに新世界の神がいないかな」\n" + \
+                  "\n" + \
+                  "太郎はそういってごろんと寝返りを打った。"
+        },
+        {
+            text: "すると部屋の窓が開いて白髪の美少女が中に入ってきた。\n" + \
+                  "\n" + \
+                  "太郎「な、なんだチミは」"
+        },
+        {
+            text: "少女「なんだチミはってか。そうです、私が神様です」\n" + \
+                  "太郎「か、神様だって？」"
+        },
+        {
+            text: "少女「新世界を作ります。あなたには住人になっていただきます」\n" + \
+                  "太郎「はわわ。どういう世界を作るんだ？」"
+        },
+        {
+            text: "少女「おいしい食べ物があって労働がない世界を作ります」\n" + \
+                  "太郎「神様といわずに俺の妻になってくれないか？」"
+        },
+        {
+            text: "少女「え？　そんな……まだ知り合ったばかりだし……」\n" + \
+                  "太郎「俺は今無職なんだけど、君が妻になってくれたら就職する。\n" + \
+                  "     約束するよ、本当だ」"
+        },
+        {
+            text: "少女「就職してから求婚してくれませんか？」\n" + \
+                  "太郎「なんてこと言うんだ。それじゃいつまで経っても求婚できない」"
+        },
+        {
+            text: "少女「あなた怠惰ですね……。ちょっと質問させてください」\n" + \
+                  "太郎「質問？　何の質問だ？」"
+        },
+        {
+            text: "少女「新世界の住人になったら何をしたいですか？」",
+            choices: [
+                "1) 自分の国を作りたい",
+                "2) 寝て過ごしたい",
+                "3) 遊んで暮らしたい",
+            ],
+            hope: 1,
+            ok: {
+                text: "少女「なるほど、自分の国を作りたいと……」",
+                "nextScene": MyCountryScene(),
+            },
+            fail: {
+                text: "少女「あなたは不適合ですね。さようなら」",
+                "nextScene": GameOverScene(),
+            }
+        },
+    ]
+end
+
+struct TitleScene:
+    extract(Scene)
+    items = ["Start", "Exit"]
+    index = 0
+
+    met update(self):
+        cmd = inputCmd("command > ")
+        return self.consumeCmd(cmd)
+    end
+
+    met consumeCmd(self, cmd):
+        if cmd == Cmd.EOF:
+            return false, self
+        elif cmd == Cmd.S:
+            self.index += 1
+            if self.index >= len(self.items):
+                self.index = 0
+            end
+        elif cmd == Cmd.W:
+            self.index -= 1
+            if self.index < 0:
+                self.index = len(self.items) - 1
+            end
+        elif cmd == Cmd.ENTER:
+            item = self.items[self.index]
+            if item == "Start":
+                return true, FirstScene()
+            elif item == "Exit":
+                return false, self
+            end
+        end
+
+        return true, self
+    end
+
+    met draw(self):
+        for i = 0; i < len(self.items); i += 1:
+            print("*", self.items[i])
+            if i == self.index:
+                puts(" <--")
+            else:
+                puts()
+            end
+        end
+    end
+end
+
+struct Game:
+    curScene = nil
+
+    def new():
+        self = Game()
+        self.curScene = TitleScene()
+        return self
+    end
+
+    met title(self):
+        puts(
+"*****************
+*    Mr Taro    *
+*****************")
+    end
+
+    met update(self):
+        ok, self.curScene = self.curScene.update()
+        return ok
+    end
+
+    met draw(self):
+        self.curScene.draw()
+    end
+end
+
+def main():
+    game = Game.new()
+    game.title()
+    game.draw()
+
+    for game.update():
+        game.draw()
+    end
+end
+
+main()
+
+@}

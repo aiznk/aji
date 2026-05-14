@@ -1,0 +1,13 @@
+{@
+    from "samples/mysite/views" import (
+        home,
+        about,
+        blog,
+    )
+
+    routes = {
+        "/": home,
+        "/about": about,
+        "/blog": blog,
+    }
+@}

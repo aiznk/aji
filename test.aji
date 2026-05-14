@@ -1,0 +1,18 @@
+{@
+    def base():
+        a = 0
+        block b1:
+        end
+        puts(a)
+    end
+
+    def derived() extends base:
+        inject b1:
+            nonlocal a
+            a += 1
+        end
+        super()
+    end
+
+    derived()
+@}

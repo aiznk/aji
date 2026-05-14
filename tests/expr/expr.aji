@@ -1,0 +1,7176 @@
+{@
+header = "Test expr/expr"
+
+def case1():
+    puts("$header case1")
+
+    a = 1
+    assert(a == 1)
+
+    a, b = 1, 2
+    assert(a == 1 and b == 2)
+
+    assert(1 + 2 == 3)
+    assert(3 == 1 + 2)
+    assert(1 + 2 != 1)
+    assert(1 != 1 + 2)
+
+    assert(1 - 2 == -1)
+    assert(-1 == 1 - 2)
+end
+
+def case2():
+    puts("$header case2")
+
+    struct S: end
+    s = S()
+    assert(s and s)
+end
+
+def caseAnd():
+    puts("$header and")
+    
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 1 and 2
+    assert(a == 2)
+
+    a = 0 and 2
+    assert(a == 0)
+
+    a = 1 and 0
+    assert(a == 0)
+
+    a = 1 and 2 and 3
+    assert(a == 3)
+
+    // int, float
+    a = 3.14 and 1
+    assert(a == 1)
+
+    a = 1 and 3.14
+    assert(a == 3.14)
+
+    a = 3.14 and 1 and 2.3
+    assert(a == 2.3)
+
+    // int, string
+    a = "abc" and 1
+    assert(a == 1)
+
+    a = 1 and "abc"
+    assert(a == "abc")
+
+    a = "abc" and 1 and "def"
+    assert(a == "def")
+
+    // int, vec
+    vec = []
+
+    a = vec and 1  
+    assert(type(a) == Vec)
+
+    a = 1 and vec
+    assert(type(a) == Vec)
+
+    // int, dict
+    d = {}
+    a = d and 1  // Dict is empty. this mean to zero
+    assert(type(a) == Dict)
+
+    a = 1 and d
+    assert(type(a) == Dict)
+
+    // int, object
+    struct S: end
+    s = S()
+
+    a  = s and 1
+    assert(a == 1)
+
+    a = 1 and s
+    assert(type(a) == S)
+
+    // int, def-struct
+    struct S: end
+
+    a = S and 1
+    assert(a == 1)
+
+    a = 1 and S
+    assert(a == S)
+
+    // int, def
+    def func(): end
+
+    a = func and 1
+    assert(a == 1)
+
+    a = 1 and func
+    assert(a == func)
+
+    // int, nil
+    a = nil and 1
+    assert(a == nil)
+
+    a = 1 and nil
+    assert(a == nil)
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 and d.v
+    assert(a == d.v)
+
+    a = d.v and 1
+    assert(a == 1)
+
+    // int, identifier
+    b = 2
+
+    a = 1 and b
+    assert(a == b)
+
+    a = b and 1
+    assert(a == 1)
+
+    /********
+    * Float *
+    ********/
+
+    // float, float
+    a = 1.2 and 3.4
+    assert(a == 3.4)
+
+    // float, int
+    // @see Int
+
+    // float, string
+    a = "abc" and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and "abc"
+    assert(a == "abc")
+
+    // float, vec
+    vec = []
+
+    a = vec and 1.2  
+    assert(type(a) == Vec)
+
+    a = 1.2 and vec
+    assert(type(a) == Vec)
+
+    vec = [1]
+
+    a = vec and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and vec
+    assert(type(a) == Vec)
+
+    // float, dict
+    d = {}
+    a = d and 1.2  // Dict is empty. this mean to zero
+    assert(type(a) == Dict)
+
+    a = 1.2 and d
+    assert(type(a) == Dict)
+
+    d = { aaa: 1 }
+    a = d and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and d
+    assert(type(d) == Dict)
+
+    // float, object
+    struct S: end
+    s = S()
+
+    a  = s and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and s
+    assert(type(a) == S)
+
+    // float, def-struct
+    struct S: end
+
+    a = S and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and S
+    assert(a == S)
+
+    // float, def
+    def func(): end
+
+    a = func and 1.2
+    assert(a == 1.2)
+
+    a = 1.2 and func
+    assert(a == func)
+
+    // int, nil
+    a = nil and 1.2
+    assert(a == nil)
+
+    a = 1.2 and nil
+    assert(a == nil)
+
+    // float, ring-object
+    d = { v: 2 }
+
+    a = 1.2 and d.v
+    assert(a == d.v)
+
+    a = d.v and 1.2
+    assert(a == 1.2)
+
+    // float, identifier
+    b = 2
+
+    a = 1.2 and b
+    assert(a == b)
+
+    a = b and 1.2
+    assert(a == 1.2)
+
+    /*********
+    * String *
+    *********/
+
+    // string, int
+    // @see Int
+
+    // string, float
+    // @see Float
+
+    // string, string
+    a = "abc" and "def"
+    assert(a == "def")
+
+    // string, vec
+    vec = []
+
+    a = vec and "abc"  
+    assert(type(a) == Vec)
+
+    a = "abc" and vec
+    assert(type(a) == Vec)
+
+    // string, dict
+    d = {}
+    a = d and "abc"  // Dict is empty. this mean to zero
+    assert(type(a) == Dict)
+
+    a = "abc" and d
+    assert(type(a) == Dict)
+
+    // string, object
+    struct S: end
+    s = S()
+
+    a  = s and "abc"
+    assert(a == "abc")
+
+    a = "abc" and s
+    assert(type(a) == S)
+
+    // string, def-struct
+    struct S: end
+
+    a = S and "abc"
+    assert(a == "abc")
+
+    a = "abc" and S
+    assert(a == S)
+
+    // string, def
+    def func(): end
+
+    a = func and "abc"
+    assert(a == "abc")
+
+    a = "abc" and func
+    assert(a == func)
+
+    // string, nil
+    a = nil and "abc"
+    assert(a == nil)
+
+    a = "abc" and nil
+    assert(a == nil)
+
+    // string, ring-object
+    d = { v: 2 }
+
+    a = "abc" and d.v
+    assert(a == d.v)
+
+    a = d.v and "abc"
+    assert(a == "abc")
+
+    // string, identifier
+    b = 2
+
+    a = "abc" and b
+    assert(a == b)
+
+    a = b and "abc"
+    assert(a == "abc")
+
+    /********
+    * Vec *
+    ********/
+
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec1 = [1]
+    vec2 = [2]
+    a = vec1 and vec2
+    assert(type(a) == Vec)
+
+    vec1 = []
+    vec2 = [2]
+    a = vec1 and vec2
+    assert(type(vec1) == Vec)
+
+    // vec, dict
+    vec = [1]
+    d = { aaa: 1 }
+    a = vec and d
+    assert(type(a) == Dict)
+
+    a = d and vec
+    assert(type(a) == Vec)
+
+    // vec, object
+    struct S: end
+    s = S()
+    vec1 = [1]
+
+    a  = s and vec1
+    assert(type(a) == Vec)
+
+    a = vec1 and s
+    assert(type(a) == S)
+
+    // vec, def-struct
+    struct S: end
+    vec1 = [1]
+
+    a = S and vec1
+    assert(type(a) == Vec)
+
+    a = vec1 and S
+    assert(a == S)
+
+    // vec, def
+    def func(): end
+    vec1 = [1]
+
+    a = func and vec1
+    assert(type(a) == Vec)
+
+    a = vec1 and func
+    assert(a == func)
+
+    // vec, nil
+    vec1 = [1]
+
+    a = nil and vec1
+    assert(a == nil)
+
+    a = vec1 and nil
+    assert(a == nil)
+
+    // vec, ring-object
+    vec = [1]
+    d = { v: 2 }
+
+    a = vec and d.v
+    assert(a == d.v)
+
+    a = d.v and vec 
+    assert(type(a) == Vec)
+
+    // vec, identifier
+    vec = [1]
+    b = 2
+
+    a = vec and b
+    assert(a == b)
+
+    a = b and vec
+    assert(type(a) == Vec)
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, object
+    struct S: end
+    s = S()
+    d = { aaa: 1 }
+
+    a  = s and d
+    assert(type(a) == Dict)
+
+    a = d and s
+    assert(type(a) == S)
+
+    // dict, def-struct
+    struct S: end
+    d = { aaa: 1 }
+
+    a = S and d
+    assert(type(a) == Dict)
+
+    a = d and S
+    assert(a == S)
+
+    // dict, def
+    def func(): end
+    d = { aaa: 1 }
+
+    a = func and d
+    assert(type(a) == Dict)
+
+    a = d and func
+    assert(a == func)
+
+    // dict, nil
+    d = { aaa: 1 }
+
+    a = nil and d
+    assert(a == nil)
+
+    a = d and nil
+    assert(a == nil)
+
+    // dict, ring-object
+    d = { aaa: 1 }
+    d2 = { v: 2 }
+
+    a = d and d2.v
+    assert(a == d2.v)
+
+    a = d2.v and d 
+    assert(type(a) == Dict)
+
+    // dict, identifier
+    d = { aaa: 1 }
+    b = 2
+
+    a = d and b
+    assert(a == b)
+
+    a = b and d
+    assert(type(a) == Dict)
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, object
+    struct S: end
+    s1 = S()
+    s2 = S()
+
+    a  = s1 and s2
+    assert(type(a) == S)
+
+    a = s2 and s1
+    assert(type(a) == S)
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    a = s and S
+    assert(a == S)
+
+    a = S and s
+    assert(type(a) == S)
+
+    // object, def
+    struct S: end
+    def func(): end
+
+    s = S()
+
+    a = func and s
+    assert(type(a) == S)
+
+    a = s and func
+    assert(a == func)
+
+    // object, nil
+    struct S: end
+    s = S()
+
+    a = nil and s
+    assert(a == nil)
+
+    a = s and nil
+    assert(a == nil)
+
+    // object, ring-object
+    struct S: end
+    s = S()
+    d = { v: 2 }
+
+    a = s and d.v
+    assert(a == d.v)
+
+    a = d.v and s 
+    assert(type(a) == S)
+
+    // object, identifier
+    struct S: end
+    s = S()
+    b = 2
+
+    a = s and b
+    assert(a == b)
+
+    a = b and s
+    assert(type(a) == S)
+
+    /*************
+    * Def struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    a = S and S
+    assert(a == S)
+
+    // def-struct, def
+    struct S: end
+    def func(): end
+
+    a = func and S
+    assert(type(a) == S)
+
+    a = S and func
+    assert(a == func)
+
+    // def-struct, nil
+    struct S: end
+
+    a = nil and S
+    assert(a == nil)
+
+    a = S and nil
+    assert(a == nil)
+
+    // def-struct, ring-object
+    struct S: end
+    d = { v: 2 }
+
+    a = S and d.v
+    assert(a == d.v)
+
+    a = d.v and S 
+    assert(a == S)
+
+    // def-struct, identifier
+    struct S: end
+    b = 2
+
+    a = S and b
+    assert(a == b)
+
+    a = b and S
+    assert(a == S)
+    
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def struct
+
+    // def, def
+    def func(): end
+
+    a = func and func
+    assert(a == func)
+
+    // def, nil
+    def func(): end
+
+    a = nil and func
+    assert(a == nil)
+
+    a = func and nil
+    assert(a == nil)
+
+    // def-struct, ring-object
+    def func(): end
+    d = { v: 2 }
+
+    a = func and d.v
+    assert(a == d.v)
+
+    a = d.v and func 
+    assert(a == func)
+
+    // def-struct, identifier
+    def func(): end
+    b = 2
+
+    a = func and b
+    assert(a == b)
+
+    a = b and func
+    assert(a == func)
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    a = nil and nil
+    assert(a == nil)
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    a = nil and d.v
+    assert(a == nil)
+
+    a = d.v and nil 
+    assert(a == nil)
+
+    // nil, identifier
+    b = 2
+
+    a = nil and b
+    assert(a == nil)
+
+    a = b and nil
+    assert(a == nil)
+
+    /**************
+    * Ring object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d1 = { v: 1 }
+    d2 = { v: 2 }
+
+    a = d1.v and d2.v
+    assert(a == d2.v)
+
+    // ring-object, identifier
+    d1 = { v: 1 }
+    b = 2
+
+    a = d1.v and b
+    assert(a == b)
+
+    a = b and d1.v
+    assert(a == d1.v)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring object
+
+    // identifier, identifier
+    b = 1
+    c = 2
+
+    a = c and b
+    assert(a == b)
+
+    a = b and c
+    assert(a == c)
+end
+
+def caseOr():
+    puts("$header or")
+    
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 1 or 2
+    assert(a == 1)
+
+    a = 0 or 2
+    assert(a == 2)
+
+    a = 1 or 0
+    assert(a == 1)
+
+    a = 1 or 2 or 3
+    assert(a == 1)
+
+    // int, float
+    a = 3.14 or 1
+    assert(a == 3.14)
+
+    a = 1 or 3.14
+    assert(a == 1)
+
+    a = 3.14 or 1 or 2.3
+    assert(a == 3.14)
+
+    // int, string
+    a = "abc" or 1
+    assert(a == "abc")
+
+    a = 1 or "abc"
+    assert(a == 1)
+
+    a = "abc" or 1 or "def"
+    assert(a == "abc")
+
+    // int, vec
+    vec = []
+
+    a = vec or 1  
+    assert(a == 1)
+
+    a = 1 or vec
+    assert(a == 1)
+
+    // int, dict
+    d = {}
+    a = d or 1  // Dict is empty. this mean to zero
+    assert(a == 1)
+
+    a = 1 or d
+    assert(a == 1)
+
+    // int, object
+    struct S: end
+    s = S()
+
+    a  = s or 1
+    assert(type(a) == S)
+
+    a = 1 or s
+    assert(a == 1)
+
+    // int, def-struct
+    struct S: end
+
+    a = S or 1
+    assert(a == S)
+
+    a = 1 or S
+    assert(a == 1)
+
+    // int, def
+    def func(): end
+
+    a = func or 1
+    assert(a == func)
+
+    a = 1 or func
+    assert(a == 1)
+
+    // int, nil
+    a = nil or 1
+    assert(a == 1)
+
+    a = 1 or nil
+    assert(a == 1)
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 or d.v
+    assert(a == 1)
+
+    a = d.v or 1
+    assert(a == d.v)
+
+    // int, identifier
+    b = 2
+
+    a = 1 or b
+    assert(a == 1)
+
+    a = b or 1
+    assert(a == b)
+
+    /********
+    * Float *
+    ********/
+
+    // float, int
+    // @see Int
+
+    // float, float
+    a = 3.14 or 1.23
+    assert(a == 3.14)
+
+    // float, string
+    a = "abc" or 1.2
+    assert(a == "abc")
+
+    a = 1.2 or "abc"
+    assert(a == 1.2)
+
+    a = "abc" or 1.2 or "def"
+    assert(a == "abc")
+
+    // float, vec
+    vec = []
+
+    a = vec or 1.2  
+    assert(a == 1.2)
+
+    a = 1.2 or vec
+    assert(a == 1.2)
+
+    // float, dict
+    d = {}
+    a = d or 1.2  // Dict is empty. this mean to zero
+    assert(a == 1.2)
+
+    a = 1.2 or d
+    assert(a == 1.2)
+
+    // float, object
+    struct S: end
+    s = S()
+
+    a  = s or 1.2
+    assert(type(a) == S)
+
+    a = 1.2 or s
+    assert(a == 1.2)
+
+    // float, def-struct
+    struct S: end
+
+    a = S or 1.2
+    assert(a == S)
+
+    a = 1.2 or S
+    assert(a == 1.2)
+
+    // float, def
+    def func(): end
+
+    a = func or 1.2
+    assert(a == func)
+
+    a = 1.2 or func
+    assert(a == 1.2)
+
+    // float, nil
+    a = nil or 1.2
+    assert(a == 1.2)
+
+    a = 1.2 or nil
+    assert(a == 1.2)
+
+    // float, ring-object
+    d = { v: 2 }
+
+    a = 1.2 or d.v
+    assert(a == 1.2)
+
+    a = d.v or 1.2
+    assert(a == d.v)
+
+    // float, identifier
+    b = 2
+
+    a = 1.2 or b
+    assert(a == 1.2)
+
+    a = b or 1.2
+    assert(a == b)
+
+    /*********
+    * String *
+    *********/
+
+    // string, int
+    // @see Int
+
+    // string, Float
+    // @see float
+
+    // string, string
+    a = "abc" or "def"
+    assert(a == "abc")
+
+    // string, vec
+    vec = []
+
+    a = vec or "abc"  
+    assert(a == "abc")
+
+    a = "abc" or vec
+    assert(a == "abc")
+
+    // string, dict
+    d = {}
+    a = d or "abc"  // Dict is empty. this mean to zero
+    assert(a == "abc")
+
+    a = "abc" or d
+    assert(a == "abc")
+
+    // string, object
+    struct S: end
+    s = S()
+
+    a  = s or "abc"
+    assert(type(a) == S)
+
+    a = "abc" or s
+    assert(a == "abc")
+
+    // string, def-struct
+    struct S: end
+
+    a = S or "abc"
+    assert(a == S)
+
+    a = "abc" or S
+    assert(a == "abc")
+
+    // string, def
+    def func(): end
+
+    a = func or "abc"
+    assert(a == func)
+
+    a = "abc" or func
+    assert(a == "abc")
+
+    // string, nil
+    a = nil or "abc"
+    assert(a == "abc")
+
+    a = "abc" or nil
+    assert(a == "abc")
+
+    // string, ring-object
+    d = { v: 2 }
+
+    a = "abc" or d.v
+    assert(a == "abc")
+
+    a = d.v or "abc"
+    assert(a == d.v)
+
+    // string, identifier
+    b = 2
+
+    a = "abc" or b
+    assert(a == "abc")
+
+    a = b or "abc"
+    assert(a == b)
+
+    /********
+    * Vec *
+    ********/
+
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    a = [] or []  
+    assert(type(a) == Vec)
+
+    // vec, dict
+    d = {}
+    b = []
+    a = d or b  // Dict is empty. this mean to zero
+    assert(type(a) == Vec)
+
+    a = b or d
+    assert(type(a) == Dict)
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    a = s or []
+    assert(type(a) == S)
+
+    a = [] or s
+    assert(type(a) == S)
+
+    // vec, def-struct
+    struct S: end
+
+    a = S or []
+    assert(a == S)
+
+    a = [] or S
+    puts(a)
+    assert(a == S)
+
+    // vec, def
+    def func(): end
+
+    a = func or []
+    assert(a == func)
+
+    a = [] or func
+    assert(a == func)
+
+    // vec, nil
+    a = nil or []
+    assert(type(a) == Vec)
+
+    a = [] or nil
+    assert(a == nil)
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    a = [] or d.v
+    assert(a == d.v)
+
+    a = d.v or []
+    assert(a == d.v)
+
+    // vec, identifier
+    b = 2
+
+    a = [] or b
+    assert(a == b)
+
+    a = b or []
+    assert(a == b)
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see Dict
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    b = {}
+    a = d or b  // Dict is empty. this mean to zero
+    assert(type(a) == Dict)
+
+    a = b or d
+    assert(type(a) == Dict)
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    a = s or {}
+    assert(type(a) == S)
+
+    a = {} or s
+    assert(type(a) == S)
+
+    // dict, def-struct
+    struct S: end
+
+    a = S or {}
+    assert(a == S)
+
+    a = {} or S
+    assert(a == S)
+
+    // dict, def
+    def func(): end
+
+    a = func or {}
+    assert(a == func)
+
+    a = {} or func
+    assert(a == func)
+
+    // dict, nil
+    a = nil or {}
+    assert(type(a) == Dict)
+
+    a = {} or nil
+    assert(a == nil)
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    a = {} or d.v
+    assert(a == d.v)
+
+    a = d.v or {}
+    assert(a == d.v)
+
+    // dict, identifier
+    b = 2
+
+    a = {} or b
+    assert(a == b)
+
+    a = b or {}
+    assert(a == b)
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see Dict
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    a = s or s
+    assert(type(a) == S)
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    a = S or s
+    assert(a == S)
+
+    a = s or S
+    assert(type(a) == S)
+
+    // object, def
+    def func(): end
+    s = S()
+
+    a = func or s
+    assert(a == func)
+
+    a = s or func
+    assert(type(a) == S)
+
+    // object, nil
+    s = S()
+    a = nil or s
+    assert(type(a) == S)
+
+    a = s or nil
+    assert(type(a) == S)
+
+    // object, ring-object
+    s = S()
+    d = { v: 2 }
+
+    a = s or d.v
+    assert(type(a) == S)
+
+    a = d.v or s
+    assert(a == d.v)
+
+    // object, identifier
+    s = S()
+    b = 2
+
+    a = s or b
+    assert(type(a) == S)
+
+    a = b or s
+    assert(a == b)
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see Dict
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Obect
+
+    // def-struct, def-struct
+    struct S: end
+
+    a = S or S
+    assert(a == S)
+
+    // def-struct, def
+    def func(): end
+
+    a = func or S
+    assert(a == func)
+
+    a = S or func
+    assert(a == S)
+
+    // def-struct, nil
+    a = nil or S
+    assert(a == S)
+
+    a = S or nil
+    assert(a == S)
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    a = S or d.v
+    assert(a == S)
+
+    a = d.v or S
+    assert(a == d.v)
+
+    // def-struct, identifier
+    b = 2
+
+    a = S or b
+    assert(a == S)
+
+    a = b or s
+    assert(a == b)
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see Dict
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Obect
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    a = func or func
+    assert(a == func)
+
+    // def, nil
+    a = nil or func
+    assert(a == func)
+
+    a = func or nil
+    assert(a == func)
+
+    // def, ring-object
+    d = { v: 2 }
+
+    a = func or d.v
+    assert(a == func)
+
+    a = d.v or func
+    assert(a == d.v)
+
+    // def, identifier
+    b = 2
+
+    a = func or b
+    assert(a == func)
+
+    a = b or func
+    assert(a == b)
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see Dict
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Obect
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    a = nil or nil
+    assert(a == nil)
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    a = nil or d.v
+    assert(a == d.v)
+
+    a = d.v or nil
+    assert(a == d.v)
+
+    // nil, identifier
+    b = 2
+
+    a = nil or b
+    assert(a == b)
+
+    a = b or nil
+    assert(a == b)
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see Dict
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Obect
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v or d.v
+    assert(a == d.v)
+
+    // ring-object, identifier
+    d = { v: 3 }
+    b = 2
+
+    a = d.v or b
+    assert(a == d.v)
+
+    a = b or d.v
+    assert(a == b)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see Dict
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Obect
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 2
+    c = 1
+
+    a = c or b
+    assert(a == c)
+
+    a = b or c
+    assert(a == b)
+end
+
+def caseNot():
+    puts("$header not")
+    
+    // int
+    a = not 1
+    assert(a == false)
+
+    a = not 0
+    assert(a == true)
+
+    a = not not 0
+    assert(a == false)
+
+    // float
+    a = not 3.14 
+    assert(a == false)
+
+    a = not 0.0
+    assert(a == true)
+
+    a = not not 0.0
+    assert(a == false)
+
+    // string
+    a = not "abc"
+    assert(a == false)
+
+    a = not ""
+    assert(a == true)
+
+    a = not not "abc"
+    assert(a == true)
+
+    // vec
+    vec = []
+
+    a = not vec  
+    assert(a == true)
+
+    vec = [1]
+    a = not vec
+    assert(a == false)
+
+    // dict
+    d = {}
+    a = not d  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    d = { "a": 1 } 
+    a = not d
+    assert(a == false)
+
+    // object
+    struct S: end
+    s = S()
+
+    a  = not s
+    assert(a == false)
+
+    // int, def-struct
+    struct S: end
+
+    a = not S
+    assert(a == false)
+
+    // def
+    def func(): end
+
+    a = not func
+    assert(a == false)
+
+    // nil
+    a = not nil
+    assert(a == true)
+
+    // ring-object
+    d = { v: 2 }
+
+    a = not d.v
+    assert(a == false)
+
+    // identifier
+    b = 1
+
+    a = not b
+    assert(a == false)
+
+    b = 0
+    a = not b
+    assert(a == true)
+end
+
+def caseEq():
+    puts("$header ==")
+
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 1 == 2
+    assert(a == false)
+
+    a = 1 == 1
+    assert(a == true)
+
+    a = 1 == 1 == 1
+    assert(a == true)
+
+    a = 1 == 1 == 0
+    assert(a == false)
+
+    // int, float
+    a = 3.14 == 1
+    assert(a == false)
+
+    a = 1 == 3.14
+    assert(a == false)
+
+    a = 3.14 == 1 == 2.3
+    assert(a == false)
+
+    // int, string
+    a = "abc" == 1
+    assert(a == false)
+
+    a = 1 == "abc"
+    assert(a == false)
+
+    a = "abc" == 1 == "def"
+    assert(a == false)
+
+    // int, vec
+    vec = []
+
+    a = vec == 1  
+    assert(a == false)
+
+    a = 1 == vec
+    assert(a == false)
+
+    a = 0 == vec
+    assert(a == false)
+
+    // int, dict
+    d = {}
+    a = d == 1  // Dict is empty. this mean to zero
+    assert(a == false)
+
+    a = 1 == d
+    assert(a == false)
+
+    // int, object
+    struct S: end
+    s = S()
+
+    a  = s == 1
+    assert(a == false)
+
+    a = 1 == s
+    assert(a == false)
+
+    // int, def-struct
+    struct S: end
+
+    a = S == 1
+    assert(a == false)
+
+    a = 1 == S
+    assert(a == false)
+
+    // int, def
+    def func(): end
+
+    a = func == 1
+    assert(a == false)
+
+    a = 1 == func
+    assert(a == false)
+
+    // int, nil
+    a = nil == 1
+    assert(a == false)
+
+    a = 1 == nil
+    assert(a == false)
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 == d.v
+    assert(a == false)
+
+    a = d.v == 1
+    assert(a == false)
+
+    // int, identifier
+    b = 2
+
+    a = 1 == b
+    assert(a == false)
+
+    a = b == 2
+    assert(a == true)
+
+    /********
+    * Float *
+    ********/
+    
+    // float, int
+    a = 1.2 == 2
+    assert(a == false)
+
+    a = 1.0 == 1
+    assert(a == true)
+
+    a = 1.0 == 1.0 == 1
+    assert(a == true)
+
+    a = 1.0 == 1.0 == 0
+    assert(a == false)
+
+    // float, float
+    a = 3.14 == 3.14
+    assert(a == true)
+
+    a = 1 == 3.14
+    assert(a == false)
+
+    a = 3.14 == 3.14 == 2.3
+    assert(a == false)
+
+    // float, string
+    a = "abc" == 1.2
+    assert(a == false)
+
+    a = 1.2 == "abc"
+    assert(a == false)
+
+    a = "abc" == 1.2 == "def"
+    assert(a == false)
+
+    // float, vec
+    vec = []
+
+    a = vec == 1.2  
+    assert(a == false)
+
+    a = 1.2 == vec
+    assert(a == false)
+
+    // float, dict
+    d = {}
+    a = d == 1.2  // Dict is empty. this mean to zero
+    assert(a == false)
+
+    a = 1.2 == d
+    assert(a == false)
+
+    // float, object
+    struct S: end
+    s = S()
+
+    a  = s == 1.2
+    assert(a == false)
+
+    a = 1.2 == s
+    assert(a == false)
+
+    // float, def-struct
+    struct S: end
+
+    a = S == 1.2
+    assert(a == false)
+
+    a = 1.2 == S
+    assert(a == false)
+
+    // float, def
+    def func(): end
+
+    a = func == 1.2
+    assert(a == false)
+
+    a = 1.2 == func
+    assert(a == false)
+
+    // float, nil
+    a = nil == 1.2
+    assert(a == false)
+
+    a = 1 == nil
+    assert(a == false)
+
+    // float, ring-object
+    d = { v: 2.2 }
+
+    a = 1.2 == d.v
+    assert(a == false)
+
+    a = d.v == 2.2
+    assert(a == true)
+
+    // float, identifier
+    b = 2.2
+
+    a = 1.2 == b
+    assert(a == false)
+
+    a = b == 2.2
+    assert(a == true)
+
+    /*********
+    * String *
+    *********/
+    
+    // string, int
+    a = "abc" == 2
+    assert(a == false)
+
+    a = "abc" == 1
+    assert(a == false)
+
+    a = "abc" == "abc" == 1
+    assert(a == true)
+
+    a = "abc" == "abc" == 0
+    assert(a == false)
+
+    // string, float
+    a = "abc" == 3.14
+    assert(a == false)
+
+    a = 3.14 == "abc"
+    assert(a == false)
+
+    a = "abc" == 3.14 == 2.3
+    assert(a == false)
+
+    // string, string
+    a = "abc" == "abc"
+    assert(a == true)
+
+    a = "def" == "abc"
+    assert(a == false)
+
+    a = "abc" == "abc" == "def"
+    assert(a == false)
+
+    // string, vec
+    vec = []
+
+    a = vec == "abc"  
+    assert(a == false)
+
+    a = "abc" == vec
+    assert(a == false)
+
+    // string, dict
+    d = {}
+    a = d == "abc"  // Dict is empty. this mean to zero
+    assert(a == false)
+
+    a = "abc" == d
+    assert(a == false)
+
+    // string, object
+    struct S: end
+    s = S()
+
+    a  = s == "abc"
+    assert(a == false)
+
+    a = "abc" == s
+    assert(a == false)
+
+    // string, def-struct
+    struct S: end
+
+    a = S == "abc" 
+    assert(a == false)
+
+    a = "abc" == S
+    assert(a == false)
+
+    // string, def
+    def func(): end
+
+    a = func == "abc"
+    assert(a == false)
+
+    a = "abc" == func
+    assert(a == false)
+
+    // string, nil
+    a = nil == "abc"
+    assert(a == false)
+
+    a = "abc" == nil
+    assert(a == false)
+
+    // string, ring-object
+    d = { v: 2.2 }
+
+    a = "abc" == d.v
+    assert(a == false)
+
+    a = d.v == "abc"
+    assert(a == false)
+
+    // string, identifier
+    b = 2.2
+
+    a = "abc" == b
+    assert(a == false)
+
+    a = b == "abc"
+    assert(a == false)
+
+    /********
+    * Vec *
+    ********/
+    
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    a = vec == vec
+    assert(a == true)
+
+    vec2 = []
+    a = vec == vec2
+    assert(a == false)
+
+    // vec, dict
+    d = {}
+    a = d == []  // Dict is empty. this mean to zero
+    assert(a == false)
+
+    a = [] == d
+    assert(a == false)
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    a  = s == []
+    assert(a == false)
+
+    a = [] == s
+    assert(a == false)
+
+    // vec, def-struct
+    struct S: end
+
+    a = S == []
+    assert(a == false)
+
+    a = [] == S
+    assert(a == false)
+
+    // vec, def
+    def func(): end
+
+    a = func == []
+    assert(a == false)
+
+    a = [] == func
+    assert(a == false)
+
+    // vec, nil
+    a = nil == []
+    assert(a == false)
+
+    a = [] == nil
+    assert(a == false)
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    a = [] == d.v
+    assert(a == false)
+
+    a = d.v == []
+    assert(a == false)
+
+    // vec, identifier
+    b = 2
+
+    a = [] == b
+    assert(a == false)
+
+    a = b == []
+    assert(a == false)
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    a = d == {}  // Dict is empty. this mean to zero
+    assert(a == false)
+
+    a = {} == d
+    assert(a == false)
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    a  = s == {}
+    assert(a == false)
+
+    a = {} == s
+    assert(a == false)
+
+    // dict, def-struct
+    struct S: end
+
+    a = S == {}
+    assert(a == false)
+
+    a = {} == S
+    assert(a == false)
+
+    // dict, def
+    def func(): end
+
+    a = func == {}
+    assert(a == false)
+
+    a = {} == func
+    assert(a == false)
+
+    // dict, nil
+    a = nil == {}
+    assert(a == false)
+
+    a = {} == nil
+    assert(a == false)
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    a = {} == d.v
+    assert(a == false)
+
+    a = d.v == {}
+    assert(a == false)
+
+    // dict, identifier
+    b = 2
+
+    a = {} == b
+    assert(a == false)
+
+    a = b == {}
+    assert(a == false)
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    a  = s == s
+    assert(a == true)
+
+    s2 = S()
+    a = s2 == s
+    assert(a == false)
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    a = S == s
+    assert(a == false)
+
+    a = s == S
+    assert(a == false)
+
+    // object, def
+    def func(): end
+
+    a = func == s
+    assert(a == false)
+
+    a = s == func
+    assert(a == false)
+
+    // object, nil
+    a = nil == s
+    assert(a == false)
+
+    a = s == nil
+    assert(a == false)
+
+    // object, ring-object
+    d = { v: 2 }
+
+    a = s == d.v
+    assert(a == false)
+
+    a = d.v == s
+    assert(a == false)
+
+    // object, identifier
+    b = 2
+
+    a = s == b
+    assert(a == false)
+
+    a = b == s
+    assert(a == false)
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    a = S == S
+    assert(a == true)
+
+    // def-struct, def
+    def func(): end
+
+    a = func == S
+    assert(a == false)
+
+    a = S == func
+    assert(a == false)
+
+    // def-struct, nil
+    a = nil == S
+    assert(a == false)
+
+    a = S == nil
+    assert(a == false)
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    a = S == d.v
+    assert(a == false)
+
+    a = d.v == S
+    assert(a == false)
+
+    // def-struct, identifier
+    b = 2
+
+    a = S == b
+    assert(a == false)
+
+    a = b == S
+    assert(a == false)
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    a = func == func
+    assert(a == true)
+
+    // def, nil
+    a = nil == func
+    assert(a == false)
+
+    a = func == nil
+    assert(a == false)
+
+    // def, ring-object
+    d = { v: 2 }
+
+    a = func == d.v
+    assert(a == false)
+
+    a = d.v == func
+    assert(a == false)
+
+    // def, identifier
+    b = 2
+
+    a = func == b
+    assert(a == false)
+
+    a = b == func
+    assert(a == false)
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    a = nil == nil
+    assert(a == true)
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    a = nil == d.v
+    assert(a == false)
+
+    a = d.v == nil
+    assert(a == false)
+
+    // nil, identifier
+    b = 2
+
+    a = nil == b
+    assert(a == false)
+
+    a = b == nil
+    assert(a == false)
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v == d.v
+    assert(a == true)
+
+    // ring-object, identifier
+    b = 1
+
+    a = d.v == b
+    assert(a == false)
+
+    a = b == d.v
+    assert(a == false)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 1
+
+    a = b == b
+    assert(a == true)
+end
+
+def caseNotEq():
+    puts("$header !=")
+
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 2 != 2
+    assert(a == false)
+
+    a = 1 != 2
+    assert(a == true)
+
+    a = 1 != 2 != 3
+    assert(a == true)
+
+    a = 1 != 1 != 0
+    assert(a == false)
+
+    // int, float
+    a = 3.14 != 1
+    assert(a == true)
+
+    a = 1 != 3.14
+    assert(a == true)
+
+    a = 3.14 != 1 != 2.3
+    assert(a == true)
+
+    // int, string
+    a = "abc" != 1
+    assert(a == true)
+
+    a = 1 != "abc"
+    assert(a == true)
+
+    a = "abc" != 1 != "def"
+    assert(a == true)
+
+    // int, vec
+    vec = []
+
+    a = vec != 1  
+    assert(a == true)
+
+    a = 1 != vec
+    assert(a == true)
+
+    // int, dict
+    d = {}
+    a = d != 1  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    a = 1 != d
+    assert(a == true)
+
+    // int, object
+    struct S: end
+    s = S()
+
+    a  = s != 1
+    assert(a == true)
+
+    a = 1 != s
+    assert(a == true)
+
+    // int, def-struct
+    struct S: end
+
+    a = S != 1
+    assert(a == true)
+
+    a = 1 != S
+    assert(a == true)
+
+    // int, def
+    def func(): end
+
+    a = func != 1
+    assert(a == true)
+
+    a = 1 != func
+    assert(a == true)
+
+    // int, nil
+    a = nil != 1
+    assert(a == true)
+
+    a = 1 != nil
+    assert(a == true)
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 != d.v
+    assert(a == true)
+
+    a = d.v != 1
+    assert(a == true)
+
+    // int, identifier
+    b = 2
+
+    a = 1 != b
+    assert(a == true)
+
+    a = b != 2
+    assert(a == false)
+
+    /********
+    * Float *
+    ********/
+    
+    // float, int
+    a = 1.2 != 2
+    assert(a == true)
+
+    a = 1.0 != 1
+    assert(a == false)
+
+    a = 1.0 != 1.0 != 1
+    assert(a == true)
+
+    a = 1.0 != 1.0 != 0
+    assert(a == false)
+
+    // float, float
+    a = 3.14 != 3.14
+    assert(a == false)
+
+    a = 1 != 3.14
+    assert(a == true)
+
+    a = 3.14 != 3.14 != 2.3
+    assert(a == true)
+
+    // float, string
+    a = "abc" != 1.2
+    assert(a == true)
+
+    a = 1.2 != "abc"
+    assert(a == true)
+
+    a = "abc" != 1.2 != "def"
+    assert(a == true)
+
+    // float, vec
+    vec = []
+
+    a = vec != 1.2  
+    assert(a == true)
+
+    a = 1.2 != vec
+    assert(a == true)
+
+    // float, dict
+    d = {}
+    a = d != 1.2  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    a = 1.2 != d
+    assert(a == true)
+
+    // float, object
+    struct S: end
+    s = S()
+
+    a  = s != 1.2
+    assert(a == true)
+
+    a = 1.2 != s
+    assert(a == true)
+
+    // float, def-struct
+    struct S: end
+
+    a = S != 1.2
+    assert(a == true)
+
+    a = 1.2 != S
+    assert(a == true)
+
+    // float, def
+    def func(): end
+
+    a = func != 1.2
+    assert(a == true)
+
+    a = 1.2 != func
+    assert(a == true)
+
+    // float, nil
+    a = nil != 1.2
+    assert(a == true)
+
+    a = 1 != nil
+    assert(a == true)
+
+    // float, ring-object
+    d = { v: 2.2 }
+
+    a = 1.2 != d.v
+    assert(a == true)
+
+    a = d.v != 2.2
+    assert(a == false)
+
+    // float, identifier
+    b = 2.2
+
+    a = 1.2 != b
+    assert(a == true)
+
+    a = b != 2.2
+    assert(a == false)
+
+    /*********
+    * String *
+    *********/
+    
+    // string, int
+    a = "abc" != 2
+    assert(a == true)
+
+    a = "abc" != 1
+    assert(a == true)
+
+    a = "abc" != "abc" != 1
+    assert(a == true)
+
+    a = "abc" != "abc" != 0
+    assert(a == false)
+
+    // string, float
+    a = "abc" != 3.14
+    assert(a == true)
+
+    a = 3.14 != "abc"
+    assert(a == true)
+
+    a = "abc" != 3.14 != 2.3
+    assert(a == true)
+
+    // string, string
+    a = "abc" != "abc"
+    assert(a == false)
+
+    a = "def" != "abc"
+    assert(a == true)
+
+    a = "abc" != "abc" != "def"
+    assert(a == true)
+
+    // string, vec
+    vec = []
+
+    a = vec != "abc"  
+    assert(a == true)
+
+    a = "abc" != vec
+    assert(a == true)
+
+    // string, dict
+    d = {}
+    a = d != "abc"  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    a = "abc" != d
+    assert(a == true)
+
+    // string, object
+    struct S: end
+    s = S()
+
+    a  = s != "abc"
+    assert(a == true)
+
+    a = "abc" != s
+    assert(a == true)
+
+    // string, def-struct
+    struct S: end
+
+    a = S != "abc" 
+    assert(a == true)
+
+    a = "abc" != S
+    assert(a == true)
+
+    // string, def
+    def func(): end
+
+    a = func != "abc"
+    assert(a == true)
+
+    a = "abc" != func
+    assert(a == true)
+
+    // string, nil
+    a = nil != "abc"
+    assert(a == true)
+
+    a = "abc" != nil
+    assert(a == true)
+
+    // string, ring-object
+    d = { v: 2.2 }
+
+    a = "abc" != d.v
+    assert(a == true)
+
+    a = d.v != "abc"
+    assert(a == true)
+
+    // string, identifier
+    b = 2.2
+
+    a = "abc" != b
+    assert(a == true)
+
+    a = b != "abc"
+    assert(a == true)
+
+    /********
+    * Vec *
+    ********/
+    
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    a = vec != vec
+    assert(a == false)
+
+    vec2 = []
+    a = vec != vec2
+    assert(a == true)
+
+    // vec, dict
+    d = {}
+    a = d != []  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    a = [] != d
+    assert(a == true)
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    a  = s != []
+    assert(a == true)
+
+    a = [] != s
+    assert(a == true)
+
+    // vec, def-struct
+    struct S: end
+
+    a = S != []
+    assert(a == true)
+
+    a = [] != S
+    assert(a == true)
+
+    // vec, def
+    def func(): end
+
+    a = func != []
+    assert(a == true)
+
+    a = [] != func
+    assert(a == true)
+
+    // vec, nil
+    a = nil != []
+    assert(a == true)
+
+    a = [] != nil
+    assert(a == true)
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    a = [] != d.v
+    assert(a == true)
+
+    a = d.v != []
+    assert(a == true)
+
+    // vec, identifier
+    b = 2
+
+    a = [] != b
+    assert(a == true)
+
+    a = b != []
+    assert(a == true)
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    a = d != {}  // Dict is empty. this mean to zero
+    assert(a == true)
+
+    a = {} != d
+    assert(a == true)
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    a  = s != {}
+    assert(a == true)
+
+    a = {} != s
+    assert(a == true)
+
+    // dict, def-struct
+    struct S: end
+
+    a = S != {}
+    assert(a == true)
+
+    a = {} != S
+    assert(a == true)
+
+    // dict, def
+    def func(): end
+
+    a = func != {}
+    assert(a == true)
+
+    a = {} != func
+    assert(a == true)
+
+    // dict, nil
+    a = nil != {}
+    assert(a == true)
+
+    a = {} != nil
+    assert(a == true)
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    a = {} != d.v
+    assert(a == true)
+
+    a = d.v != {}
+    assert(a == true)
+
+    // dict, identifier
+    b = 2
+
+    a = {} != b
+    assert(a == true)
+
+    a = b != {}
+    assert(a == true)
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    a  = s != s
+    assert(a == false)
+
+    s2 = S()
+    a = s2 != s
+    assert(a == true)
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    a = S != s
+    assert(a == true)
+
+    a = s != S
+    assert(a == true)
+
+    // object, def
+    def func(): end
+
+    a = func != s
+    assert(a == true)
+
+    a = s != func
+    assert(a == true)
+
+    // object, nil
+    a = nil != s
+    assert(a == true)
+
+    a = s != nil
+    assert(a == true)
+
+    // object, ring-object
+    d = { v: 2 }
+
+    a = s != d.v
+    assert(a == true)
+
+    a = d.v != s
+    assert(a == true)
+
+    // object, identifier
+    b = 2
+
+    a = s != b
+    assert(a == true)
+
+    a = b != s
+    assert(a == true)
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    a = S != S
+    assert(a == false)
+
+    // def-struct, def
+    def func(): end
+
+    a = func != S
+    assert(a == true)
+
+    a = S != func
+    assert(a == true)
+
+    // def-struct, nil
+    a = nil != S
+    assert(a == true)
+
+    a = S != nil
+    assert(a == true)
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    a = S != d.v
+    assert(a == true)
+
+    a = d.v != S
+    assert(a == true)
+
+    // def-struct, identifier
+    b = 2
+
+    a = S != b
+    assert(a == true)
+
+    a = b != S
+    assert(a == true)
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    a = func != func
+    assert(a == false)
+
+    // def, nil
+    a = nil != func
+    assert(a == true)
+
+    a = func != nil
+    assert(a == true)
+
+    // def, ring-object
+    d = { v: 2 }
+
+    a = func != d.v
+    assert(a == true)
+
+    a = d.v != func
+    assert(a == true)
+
+    // def, identifier
+    b = 2
+
+    a = func != b
+    assert(a == true)
+
+    a = b != func
+    assert(a == true)
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    a = nil != nil
+    assert(a == false)
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    a = nil != d.v
+    assert(a == true)
+
+    a = d.v != nil
+    assert(a == true)
+
+    // nil, identifier
+    b = 2
+
+    a = nil != b
+    assert(a == true)
+
+    a = b != nil
+    assert(a == true)
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v != d.v
+    assert(a == false)
+
+    // ring-object, identifier
+    b = 1
+
+    a = d.v != b
+    assert(a == true)
+
+    a = b != d.v
+    assert(a == true)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 1
+
+    a = b != b
+    assert(a == false)
+end
+
+def check(exprs):
+    for i = 0; i < len(exprs); i += 1:
+        expr = exprs[i]
+        if len(expr) == 3:
+            if type(expr[2]) == Bool:
+                if type(expr[1]) == Dict:
+                    if getattr(expr[1], "v"):
+                        a = expr[0] <= expr[1].v
+                    end
+                elif type(expr[0]) == Dict:
+                    if getattr(expr[0], "v"):
+                        a = expr[0].v <= expr[1]
+                    end                
+                else:
+                    a = expr[0] <= expr[1]
+                end
+                assert(a == expr[2])
+            else:
+                try:
+                    puts(expr[0], "<=", expr[1])
+                    expr[0] <= expr[1]
+                    assert(0 and "hige")
+                catch TypeError as e:
+                    puts("TypeError!")
+                end
+            end
+        end
+    end
+end
+
+def caseLtEq():
+    puts("$header <=")
+
+    a = 0 <= 0 <= 0
+    assert(a == false)
+
+    a = 0 <= 0 <= 1
+    assert(a == true)
+
+    a = 1 <= 0 <= 0
+    assert(a == true)
+
+    struct S: end
+    o = S()
+
+    def func(): end
+    idn = 1
+
+    ro = { v: 1 }
+
+    exprs = [
+        /* int, int */ [0, 0, true], [1, 0, false],
+        /* int, bool */ [0, true, true], [true, 0, false],
+        /* int, float */ [0, 0.1, true], [1, 0.1, false],
+        /* int, string */ [0, "abc", TypeError], ["abc", 0, TypeError],
+        /* int, vec */ [0, [], TypeError], [[], 0, TypeError],
+        /* int, dict */ [0, {}, TypeError], [{}, 0, TypeError],
+        /* int, object */ [0, o, TypeError], [o, 0, TypeError],
+        /* int, def-struct */ [0, S, TypeError], [S, 0, TypeError],
+        /* int, def */ [0, func, TypeError], [func, 0, TypeError],
+        /* int, nil */ [0, nil, TypeError], [nil, 0, TypeError],
+        /* int, ring-object */ [0, ro, true], [ro, 0, false],
+        /* int, identifier */ [0, idn, true], [idn, 0, false],
+        /* float, int */ [0.0, 0, true], [1.0, 0, false],
+        /* float, bool */ [0.0, true, true], [true, 0.0, false],
+        /* float, float */ [0.0, 0.1, true], [1.0, 0.1, false],
+        /* float, string */ [0.0, "abc", TypeError], ["abc", 0.0, TypeError],
+        /* float, vec */ [0.0, [], TypeError], [[], 0.0, TypeError],
+        /* float, dict */ [0.0, {}, TypeError], [{}, 0.0, TypeError],
+        /* float, object */ [0.0, o, TypeError], [o, 0.0, TypeError],
+        /* float, def-struct */ [0.0, S, TypeError], [S, 0.0, TypeError],
+        /* float, def */ [0.0, func, TypeError], [func, 0.0, TypeError],
+        /* float, nil */ [0.0, nil, TypeError], [nil, 0.0, TypeError],
+        /* float, ring-object */ [0.0, ro, true], [ro, 0.0, false],
+        /* float, identifier */ [0.0, idn, true], [idn, 0.0, false],
+        /* bool, int */ [false, 0, true], [true, 0, false],
+        /* bool, bool */ [false, true, true], [true, false, false],
+        /* bool, float */ [false, 0.1, true], [true, 0.1, false],
+        /* bool, string */ [false, "abc", TypeError], ["abc", false, TypeError],
+        /* bool, vec */ [false, [], TypeError], [[], false, TypeError],
+        /* bool, dict */ [false, {}, TypeError], [{}, false, TypeError],
+        /* bool, object */ [false, o, TypeError], [o, false, TypeError],
+        /* bool, def-struct */ [false, S, TypeError], [S, false, TypeError],
+        /* bool, def */ [false, func, TypeError], [func, false, TypeError],
+        /* bool, nil */ [false, nil, TypeError], [nil, false, TypeError],
+        /* bool, ring-object */ [false, ro, true], [ro, false, false],
+        /* bool, identifier */ [false, idn, true], [idn, false, false],
+        /* string, int */ ["abc", 0, TypeError], [0, "abc", TypeError],
+        /* string, bool */ ["abc", true, TypeError], [true, "abc", TypeError],
+        /* string, float */ ["abc", 0.1, TypeError], [0.1, "abc", TypeError],
+        /* string, string */ ["abc", "abc", TypeError], 
+        /* string, vec */ ["abc", [], TypeError], ["abc", [], TypeError],
+        /* string, dict */ ["abc", {}, TypeError], [{}, "abc", TypeError],
+        /* string, object */ ["abc", o, TypeError], [o, "abc", TypeError],
+        /* string, def-struct */ ["abc", S, TypeError], [S, "abc", TypeError],
+        /* string, def */ ["abc", func, TypeError], [func, "abc", TypeError],
+        /* string, nil */ ["abc", nil, TypeError], [nil, "abc", TypeError],
+        /* string, ring-object */ ["abc", ro, TypeError], [ro, "abc", TypeError],
+        /* string, identifier */ ["abc", idn, TypeError], [idn, "abc", TypeError],
+        /* vec, int */ [[], 0, TypeError], [0, [], TypeError],
+        /* vec, bool */ [[], true, TypeError], [true, [], TypeError],
+        /* vec, float */ [[], 0.1, TypeError], [0.1, [], TypeError],
+        /* vec, string */ [[], [], TypeError], 
+        /* vec, vec */ [[], [], TypeError], [[], [], TypeError],
+        /* vec, dict */ [[], {}, TypeError], [{}, [], TypeError],
+        /* vec, object */ [[], o, TypeError], [o, [], TypeError],
+        /* vec, def-struct */ [[], S, TypeError], [S, [], TypeError],
+        /* vec, def */ [[], func, TypeError], [func, [], TypeError],
+        /* vec, nil */ [[], nil, TypeError], [nil, [], TypeError],
+        /* vec, ring-object */ [[], ro, TypeError], [ro, [], TypeError],
+        /* vec, identifier */ [[], idn, TypeError], [idn, [], TypeError],
+        /* dict, int */ [{}, 0, TypeError], [0, {}, TypeError],
+        /* dict, bool */ [{}, true, TypeError], [true, {}, TypeError],
+        /* dict, float */ [{}, 0.1, TypeError], [0.1, {}, TypeError],
+        /* dict, string */ [{}, "abc", TypeError], ["abc", {}, TypeError], 
+        /* dict, vec */ [{}, [], TypeError], [[], {}, TypeError],
+        /* dict, dict */ [{}, {}, TypeError], [{}, {}, TypeError],
+        /* dict, object */ [{}, o, TypeError], [o, {}, TypeError],
+        /* dict, def-struct */ [{}, S, TypeError], [S, {}, TypeError],
+        /* dict, def */ [{}, func, TypeError], [func, {}, TypeError],
+        /* dict, nil */ [{}, nil, TypeError], [nil, {}, TypeError],
+        /* dict, ring-object */ [{}, ro, TypeError], [ro, {}, TypeError],
+        /* dict, identifier */ [{}, idn, TypeError], [idn, {}, TypeError],
+        /* def-struct, int */ [S, 0, TypeError], [0, S, TypeError],
+        /* def-struct, bool */ [S, true, TypeError], [true, S, TypeError],
+        /* def-struct, float */ [S, 0.1, TypeError], [0.1, S, TypeError],
+        /* def-struct, string */ [S, "abc", TypeError], ["abc", S, TypeError],
+        /* def-struct, vec */ [S, [], TypeError], [[], S, TypeError],
+        /* def-struct, dict */ [S, S, TypeError], [S, S, TypeError],
+        /* def-struct, object */ [S, o, TypeError], [o, S, TypeError],
+        /* def-struct, def-struct */ [S, S, TypeError], [S, S, TypeError],
+        /* def-struct, def */ [S, func, TypeError], [func, S, TypeError],
+        /* def-struct, nil */ [S, nil, TypeError], [nil, S, TypeError],
+        /* def-struct, ring-object */ [S, ro, TypeError], [ro, S, TypeError],
+        /* def-struct, identifier */ [S, idn, TypeError], [idn, S, TypeError],
+        /* object, int */ [o, 0, TypeError], [0, o, TypeError],
+        /* object, bool */ [o, true, TypeError], [true, o, TypeError],
+        /* object, float */ [o, 0.1, TypeError], [0.1, o, TypeError],
+        /* object, string */ [o, "abc", TypeError], ["abc", o, TypeError],
+        /* object, vec */ [o, [], TypeError], [[], o, TypeError],
+        /* object, dict */ [o, o, TypeError], [o, o, TypeError],
+        /* object, object */ [o, o, TypeError], [o, o, TypeError],
+        /* object, def-struct */ [o, S, TypeError], [S, o, TypeError],
+        /* object, def */ [o, func, TypeError], [func, o, TypeError],
+        /* object, nil */ [o, nil, TypeError], [nil, o, TypeError],
+        /* object, ring-object */ [o, ro, TypeError], [ro, o, TypeError],
+        /* object, identifier */ [o, idn, TypeError], [idn, o, TypeError],
+        /* def, int */ [func, 0, TypeError], [0, func, TypeError],
+        /* def, bool */ [func, true, TypeError], [true, func, TypeError],
+        /* def, float */ [func, 0.1, TypeError], [0.1, func, TypeError],
+        /* def, string */ [func, "abc", TypeError], ["abc", func, TypeError],
+        /* def, vec */ [func, [], TypeError], [[], func, TypeError],
+        /* def, dict */ [func, func, TypeError], [func, func, TypeError],
+        /* def, object */ [func, o, TypeError], [o, func, TypeError],
+        /* def, def-struct */ [func, S, TypeError], [S, func, TypeError],
+        /* def, def */ [func, func, TypeError], [func, func, TypeError],
+        /* def, nil */ [func, nil, TypeError], [nil, func, TypeError],
+        /* def, ring-object */ [func, ro, TypeError], [ro, func, TypeError],
+        /* def, identifier */ [func, idn, TypeError], [idn, func, TypeError],
+        /* nil, int */ [nil, 0, TypeError], [0, nil, TypeError],
+        /* nil, bool */ [nil, true, TypeError], [true, nil, TypeError],
+        /* nil, float */ [nil, 0.1, TypeError], [0.1, nil, TypeError],
+        /* nil, string */ [nil, "abc", TypeError], ["abc", nil, TypeError],
+        /* nil, vec */ [nil, [], TypeError], [[], nil, TypeError],
+        /* nil, dict */ [nil, nil, TypeError], [nil, nil, TypeError],
+        /* nil, object */ [nil, o, TypeError], [o, nil, TypeError],
+        /* nil, def-struct */ [nil, S, TypeError], [S, nil, TypeError],
+        /* nil, def */ [nil, func, TypeError], [func, nil, TypeError],
+        /* nil, nil */ [nil, nil, TypeError], [nil, nil, TypeError],
+        /* nil, ring-object */ [nil, ro, TypeError], [ro, nil, TypeError],
+        /* nil, identifier */ [nil, idn, TypeError], [idn, nil, TypeError],
+        /* ring-object, int */ [ro, 0, TypeError], [0, ro, TypeError],
+        /* ring-object, bool */ [ro, true, TypeError], [true, ro, TypeError],
+        /* ring-object, float */ [ro, 0.1, TypeError], [0.1, ro, TypeError],
+        /* ring-object, string */ [ro, "abc", TypeError], ["abc", ro, TypeError],
+        /* ring-object, vec */ [ro, [], TypeError], [[], ro, TypeError],
+        /* ring-object, dict */ [ro, {}, TypeError], [{}, ro, TypeError],
+        /* ring-object, object */ [ro, o, TypeError], [o, ro, TypeError],
+        /* ring-object, def-struct */ [ro, S, TypeError], [S, ro, TypeError],
+        /* ring-object, def */ [ro, func, TypeError], [func, ro, TypeError],
+        /* ring-object, nil */ [ro, nil, TypeError], [nil, ro, TypeError],
+        /* ring-object, ring-object */ [ro, ro, TypeError], [ro, ro, TypeError],
+        /* ring-object, identifier */ [ro, idn, TypeError], [idn, ro, TypeError],
+        /* identifier, int */ [idn, 0, false], [0, idn, true],
+        /* identifier, bool */ [idn, true, true], [true, idn, true],
+        /* identifier, float */ [idn, 0.1, false], [0.1, idn, true],
+        /* identifier, string */ [idn, "abc", TypeError], ["abc", idn, TypeError],
+        /* identifier, vec */ [idn, [], TypeError], [[], idn, TypeError],
+        /* identifier, dict */ [idn, {}, TypeError], [{}, idn, TypeError],
+        /* identifier, object */ [idn, o, TypeError], [o, idn, TypeError],
+        /* identifier, def-struct */ [idn, S, TypeError], [S, idn, TypeError],
+        /* identifier, def */ [idn, func, TypeError], [func, idn, TypeError],
+        /* identifier, nil */ [idn, nil, TypeError], [nil, idn, TypeError],
+        /* identifier, ring-object */ [idn, ro, true], [ro, idn, true],
+        /* identifier, identifier */ [idn, idn, true], [idn, idn, true],
+    ]
+
+    check(exprs)
+end
+
+def caseGtEq():
+    puts("$header >=")
+
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 2 >= 2
+    assert(a == true)
+
+    a = 1 >= 2
+    assert(a == false)
+
+    a = 1 >= 2 >= 3
+    assert(a == false)
+
+    a = 1 >= 1 >= 0
+    assert(a == true)
+
+    // int, float
+    a = 3.14 >= 1
+    assert(a == true)
+
+    a = 1 >= 3.14
+    assert(a == false)
+
+    a = 3.14 >= 1 >= 2.3
+    assert(a == false)
+
+    // int, string
+    try:
+        a = "abc" >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= 1 >= "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, vec
+    vec = []
+
+    try:
+        a = vec >= 1  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, dict
+    d = {}
+
+    try:
+        a = d >= 1  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def-struct
+    struct S: end
+
+    try:
+        a = S >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def
+    def func(): end
+
+    try:
+        a = func >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, nil
+    try:
+        a = nil >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 >= d.v
+    assert(a == false)
+
+    a = d.v >= 1
+    assert(a == true)
+
+    // int, identifier
+    b = 2
+
+    a = 1 >= b
+    assert(a == false)
+
+    a = b >= 2
+    assert(a == true)
+
+    /********
+    * Float *
+    ********/
+    
+    // float, int
+    a = 1.2 >= 2
+    assert(a == false)
+
+    a = 1.0 >= 1
+    assert(a == true)
+
+    a = 1.0 >= 1.0 >= 1
+    assert(a == true)
+
+    a = 1.0 >= 1.0 >= 0
+    assert(a == true)
+
+    // float, float
+    a = 3.14 >= 3.14
+    assert(a == true)
+
+    a = 1 >= 3.14
+    assert(a == false)
+
+    a = 3.14 >= 3.14 >= 2.3
+    assert(a == false)
+
+    // float, string
+    try:
+        a = "abc" >= 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= 1.2 >= "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, vec
+    vec = []
+
+    try:
+        a = vec >= 1.2  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, dict
+    d = {}
+
+    try:
+        a = d >= 1.2  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s >= 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def-struct
+    struct S: end
+
+    try:
+        a = S >= 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def
+    def func(): end
+
+    try:
+        a = func >= 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, nil
+    try:
+        a = nil >= 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, ring-object
+    d = { v: 2.2 }
+
+    a = 1.2 >= d.v
+    assert(a == false)
+
+    a = d.v >= 2.2
+    assert(a == true)
+
+    // float, identifier
+    b = 2.2
+
+    a = 1.2 >= b
+    assert(a == false)
+
+    a = b >= 2.2
+    assert(a == true)
+
+    /*********
+    * String *
+    *********/
+    
+    // string, int
+    try:
+        a = "abc" >= 2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= "abc" >= 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= "abc" >= 0
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, float
+    try:
+        a = "abc" >= 3.14
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 3.14 >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= 3.14 >= 2.3
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, string
+    try:
+        a = "abc" >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "def" >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= "abc" >= "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, vec
+    vec = []
+
+    try:
+        a = vec >= "abc"  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, dict
+    d = {}
+    try:
+        a = d >= "abc"  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def-struct
+    struct S: end
+
+    try:
+        a = S >= "abc" 
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def
+    def func(): end
+
+    try:
+        a = func >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, nil
+    try:
+        a = nil >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, ring-object
+    d = { v: 2.2 }
+
+    try:
+        a = "abc" >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, identifier
+    b = 2.2
+
+    try:
+        a = "abc" >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /********
+    * Vec *
+    ********/
+    
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    try:
+        a = vec >= vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    vec2 = []
+    try:
+        a = vec >= vec2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, dict
+    d = {}
+    try:
+        a = d >= []  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] >= d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def-struct
+    struct S: end
+
+    try:
+        a = S >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def
+    def func(): end
+
+    try:
+        a = func >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, nil
+    try:
+        a = nil >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    try:
+        a = [] >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, identifier
+    b = 2
+
+    try:
+        a = [] >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    try:
+        a = d >= {}  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} >= d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def-struct
+    struct S: end
+
+    try:
+        a = S >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def
+    def func(): end
+
+    try:
+        a = func >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, nil
+    try:
+        a = nil >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    try:
+        a = {} >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, identifier
+    b = 2
+
+    try:
+        a = {} >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    s2 = S()
+    try:
+        a = s2 >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    try:
+        a = S >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def
+    def func(): end
+
+    try:
+        a = func >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, nil
+    try:
+        a = nil >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, ring-object
+    d = { v: 2 }
+
+    try:
+        a = s >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, identifier
+    b = 2
+
+    try:
+        a = s >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    try:
+        a = S >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, def
+    def func(): end
+
+    try:
+        a = func >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, nil
+    try:
+        a = nil >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    try:
+        a = S >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, identifier
+    b = 2
+
+    try:
+        a = S >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    try:
+        a = func >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, nil
+    try:
+        a = nil >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = func >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, ring-object
+    d = { v: 2 }
+
+    try:
+        a = func >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, identifier
+    b = 2
+
+    try:
+        a = func >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    try:
+        a = nil >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    try:
+        a = nil >= d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, identifier
+    b = 2
+
+    try:
+        a = nil >= b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b >= nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v >= d.v
+    assert(a == true)
+
+    // ring-object, identifier
+    b = 1
+
+    a = d.v >= b
+    assert(a == true)
+
+    a = b >= d.v
+    assert(a == false)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 1
+
+    a = b >= b
+    assert(a == true)
+end
+
+
+def caseLt():
+    puts("$header <")
+
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 2 < 2
+    assert(a == false)
+
+    a = 1 < 2
+    assert(a == true)
+
+    a = 1 < 2 < 3
+    assert(a == true)
+
+    a = 1 < 1 < 0
+    assert(a == false)
+
+    // int, float
+    a = 3.14 < 1
+    assert(a == false)
+
+    a = 1 < 3.14
+    assert(a == true)
+
+    a = 3.14 < 1 < 2.3
+    assert(a == true)
+
+    // int, string
+    try:
+        a = "abc" < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < 1 < "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, vec
+    vec = []
+
+    try:
+        a = vec < 1  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, dict
+    d = {}
+
+    try:
+        a = d < 1  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def-struct
+    struct S: end
+
+    try:
+        a = S < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def
+    def func(): end
+
+    try:
+        a = func < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, nil
+    try:
+        a = nil < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 < d.v
+    assert(a == true)
+
+    a = d.v < 1
+    assert(a == false)
+
+    // int, identifier
+    b = 2
+
+    a = 1 < b
+    assert(a == true)
+
+    a = b < 2
+    assert(a == false)
+
+    /********
+    * Float *
+    ********/
+    
+    // float, int
+    a = 1.2 < 2
+    assert(a == true)
+
+    a = 1.0 < 1
+    assert(a == false)
+
+    a = 1.0 < 1.0 < 1
+    assert(a == true)
+
+    a = 1.0 < 1.0 < 0
+    assert(a == false)
+
+    // float, float
+    a = 3.14 < 3.14
+    assert(a == false)
+
+    a = 1 < 3.14
+    assert(a == true)
+
+    a = 3.14 < 3.14 < 2.3
+    assert(a == true)
+
+    // float, string
+    try:
+        a = "abc" < 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < 1.2 < "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, vec
+    vec = []
+
+    try:
+        a = vec < 1.2  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, dict
+    d = {}
+
+    try:
+        a = d < 1.2  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s < 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def-struct
+    struct S: end
+
+    try:
+        a = S < 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def
+    def func(): end
+
+    try:
+        a = func < 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, nil
+    try:
+        a = nil < 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, ring-object
+    d = { v: 2.2 }
+
+    a = 1.2 < d.v
+    assert(a == true)
+
+    a = d.v < 2.2
+    assert(a == false)
+
+    // float, identifier
+    b = 2.2
+
+    a = 1.2 < b
+    assert(a == true)
+
+    a = b < 2.2
+    assert(a == false)
+
+    /*********
+    * String *
+    *********/
+    
+    // string, int
+    try:
+        a = "abc" < 2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < "abc" < 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < "abc" < 0
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, float
+    try:
+        a = "abc" < 3.14
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 3.14 < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < 3.14 < 2.3
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, string
+    try:
+        a = "abc" < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "def" < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < "abc" < "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, vec
+    vec = []
+
+    try:
+        a = vec < "abc"  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, dict
+    d = {}
+    try:
+        a = d < "abc"  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def-struct
+    struct S: end
+
+    try:
+        a = S < "abc" 
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def
+    def func(): end
+
+    try:
+        a = func < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, nil
+    try:
+        a = nil < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, ring-object
+    d = { v: 2.2 }
+
+    try:
+        a = "abc" < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, identifier
+    b = 2.2
+
+    try:
+        a = "abc" < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /********
+    * Vec *
+    ********/
+    
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    try:
+        a = vec < vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    vec2 = []
+    try:
+        a = vec < vec2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, dict
+    d = {}
+    try:
+        a = d < []  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] < d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def-struct
+    struct S: end
+
+    try:
+        a = S < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def
+    def func(): end
+
+    try:
+        a = func < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, nil
+    try:
+        a = nil < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    try:
+        a = [] < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, identifier
+    b = 2
+
+    try:
+        a = [] < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    try:
+        a = d < {}  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} < d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def-struct
+    struct S: end
+
+    try:
+        a = S < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def
+    def func(): end
+
+    try:
+        a = func < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, nil
+    try:
+        a = nil < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    try:
+        a = {} < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, identifier
+    b = 2
+
+    try:
+        a = {} < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    s2 = S()
+    try:
+        a = s2 < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    try:
+        a = S < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def
+    def func(): end
+
+    try:
+        a = func < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, nil
+    try:
+        a = nil < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, ring-object
+    d = { v: 2 }
+
+    try:
+        a = s < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, identifier
+    b = 2
+
+    try:
+        a = s < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    try:
+        a = S < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, def
+    def func(): end
+
+    try:
+        a = func < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, nil
+    try:
+        a = nil < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    try:
+        a = S < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, identifier
+    b = 2
+
+    try:
+        a = S < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    try:
+        a = func < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, nil
+    try:
+        a = nil < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = func < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, ring-object
+    d = { v: 2 }
+
+    try:
+        a = func < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, identifier
+    b = 2
+
+    try:
+        a = func < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    try:
+        a = nil < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    try:
+        a = nil < d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, identifier
+    b = 2
+
+    try:
+        a = nil < b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b < nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v < d.v
+    assert(a == false)
+
+    // ring-object, identifier
+    b = 1
+
+    a = d.v < b
+    assert(a == false)
+
+    a = b < d.v
+    assert(a == true)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 1
+
+    a = b < b
+    assert(a == false)
+end
+
+def caseGt():
+    puts("$header >")
+
+    /******
+    * Int *
+    ******/
+    
+    // int, int
+    a = 2 > 2
+    assert(a == false)
+
+    a = 1 > 2
+    assert(a == false)
+
+    a = 1 > 2 > 3
+    assert(a == false)
+
+    a = 1 > 1 > 0
+    assert(a == false)
+
+    a = 2 > 0
+    assert(a == true)
+
+    // int, float
+    a = 3.14 > 1
+    assert(a == true)
+
+    a = 1 > 3.14
+    assert(a == false)
+
+    a = 3.14 > 1 > 2.3
+    assert(a == false)
+
+    // int, string
+    try:
+        a = "abc" > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > 1 > "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, vec
+    vec = []
+
+    try:
+        a = vec > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, dict
+    d = {}
+
+    try:
+        a = d > 1  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def-struct
+    struct S: end
+
+    try:
+        a = S > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, def
+    def func(): end
+
+    try:
+        a = func > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, nil
+    try:
+        a = nil > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // int, ring-object
+    d = { v: 2 }
+
+    a = 1 > d.v
+    assert(a == false)
+
+    a = d.v > 1
+    assert(a == true)
+
+    // int, identifier
+    b = 2
+
+    a = 1 > b
+    assert(a == false)
+
+    a = b > 1
+    assert(a == true)
+
+    /********
+    * Float *
+    ********/
+    
+    // float, int
+    a = 1.2 > 2
+    assert(a == false)
+
+    a = 1.0 > 1
+    assert(a == false)
+
+    a = 1.0 > 1.0 > 1
+    assert(a == false)
+
+    a = 1.0 > 1.0 > 0
+    assert(a == false)
+
+    // float, float
+    a = 3.14 > 3.14
+    assert(a == false)
+
+    a = 1 > 3.14
+    assert(a == false)
+
+    a = 3.14 > 3.14 > 2.3
+    assert(a == false)
+
+    a = 3.14 > 1
+    assert(a == true)
+
+    // float, string
+    try:
+        a = "abc" > 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > 1.2 > "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, vec
+    vec = []
+
+    try:
+        a = vec > 1.2  
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, dict
+    d = {}
+
+    try:
+        a = d > 1.2  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s > 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def-struct
+    struct S: end
+
+    try:
+        a = S > 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, def
+    def func(): end
+
+    try:
+        a = func > 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1.2 > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, nil
+    try:
+        a = nil > 1.2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 1 > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // float, ring-object
+    d = { v: 2.2 }
+
+    a = 1.2 > d.v
+    assert(a == false)
+
+    a = d.v > 1.2
+    assert(a == true)
+
+    // float, identifier
+    b = 2.2
+
+    a = 1.2 > b
+    assert(a == false)
+
+    a = b > 1.2
+    assert(a == true)
+
+    /*********
+    * String *
+    *********/
+    
+    // string, int
+    try:
+        a = "abc" > 2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > "abc" > 1
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > "abc" > 0
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, float
+    try:
+        a = "abc" > 3.14
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = 3.14 > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > 3.14 > 2.3
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, string
+    try:
+        a = "abc" > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "def" > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > "abc" > "def"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, vec
+    vec = []
+
+    try:
+        a = vec > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, dict
+    d = {}
+    try:
+        a = d > "abc"  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def-struct
+    struct S: end
+
+    try:
+        a = S > "abc" 
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, def
+    def func(): end
+
+    try:
+        a = func > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, nil
+    try:
+        a = nil > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = "abc" > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, ring-object
+    d = { v: 2.2 }
+
+    try:
+        a = "abc" > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // string, identifier
+    b = 2.2
+
+    try:
+        a = "abc" > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > "abc"
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /********
+    * Vec *
+    ********/
+    
+    // vec, int
+    // @see Int
+
+    // vec, float
+    // @see Float
+
+    // vec, string
+    // @see String
+
+    // vec, vec
+    vec = []
+
+    try:
+        a = vec > vec
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    vec2 = []
+    try:
+        a = vec > vec2
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, dict
+    d = {}
+    try:
+        a = d > []  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] > d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, object
+    struct S: end
+    s = S()
+
+    try:
+        a = s > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def-struct
+    struct S: end
+
+    try:
+        a = S > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, def
+    def func(): end
+
+    try:
+        a = func > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, nil
+    try:
+        a = nil > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = [] > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, ring-object
+    d = { v: 2 }
+
+    try:
+        a = [] > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // vec, identifier
+    b = 2
+
+    try:
+        a = [] > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > []
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*******
+    * Dict *
+    *******/
+
+    // dict, int
+    // @see Int
+
+    // dict, float
+    // @see Float
+
+    // dict, string
+    // @see String
+
+    // dict, vec
+    // @see Vec
+
+    // dict, dict
+    d = {}
+    try:
+        a = d > {}  // Dict is empty. this mean to zero
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} > d
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def-struct
+    struct S: end
+
+    try:
+        a = S > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, def
+    def func(): end
+
+    try:
+        a = func > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, nil
+    try:
+        a = nil > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = {} > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, ring-object
+    d = { v: 2 }
+
+    try:
+        a = {} > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // dict, identifier
+    b = 2
+
+    try:
+        a = {} > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > {}
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*********
+    * Object *
+    *********/
+
+    // object, int
+    // @see Int
+
+    // object, float
+    // @see Float
+
+    // object, string
+    // @see String
+
+    // object, vec
+    // @see Vec
+
+    // object, dict
+    // @see Dict
+
+    // object, object
+    struct S: end
+    s = S()
+
+    try:
+        a  = s > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    s2 = S()
+    try:
+        a = s2 > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def-struct
+    struct S: end
+    s = S()
+
+    try:
+        a = S > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, def
+    def func(): end
+
+    try:
+        a = func > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, nil
+    try:
+        a = nil > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = s > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, ring-object
+    d = { v: 2 }
+
+    try:
+        a = s > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // object, identifier
+    b = 2
+
+    try:
+        a = s > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > s
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /*************
+    * Def Struct *
+    *************/
+
+    // def-struct, int
+    // @see Int
+
+    // def-struct, float
+    // @see Float
+
+    // def-struct, string
+    // @see String
+
+    // def-struct, vec
+    // @see Vec
+
+    // def-struct, dict
+    // @see Dict
+
+    // def-struct, object
+    // @see Object
+
+    // def-struct, def-struct
+    struct S: end
+
+    try:
+        a = S > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, def
+    def func(): end
+
+    try:
+        a = func > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, nil
+    try:
+        a = nil > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = S > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, ring-object
+    d = { v: 2 }
+
+    try:
+        a = S > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def-struct, identifier
+    b = 2
+
+    try:
+        a = S > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > S
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Def *
+    ******/
+
+    // def, int
+    // @see Int
+
+    // def, float
+    // @see Float
+
+    // def, string
+    // @see String
+
+    // def, vec
+    // @see Vec
+
+    // def, dict
+    // @see Dict
+
+    // def, object
+    // @see Object
+
+    // def, def-struct
+    // @see Def Struct
+
+    // def, def
+    def func(): end
+
+    try:
+        a = func > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, nil
+    try:
+        a = nil > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = func > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, ring-object
+    d = { v: 2 }
+
+    try:
+        a = func > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // def, identifier
+    b = 2
+
+    try:
+        a = func > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > func
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /******
+    * Nil *
+    ******/
+
+    // nil, int
+    // @see Int
+
+    // nil, float
+    // @see Float
+
+    // nil, string
+    // @see String
+
+    // nil, vec
+    // @see Vec
+
+    // nil, dict
+    // @see Dict
+
+    // nil, object
+    // @see Object
+
+    // nil, def-struct
+    // @see Def Struct
+
+    // nil, def
+    // @see Def
+
+    // nil, nil
+    try:
+        a = nil > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, ring-object
+    d = { v: 2 }
+
+    try:
+        a = nil > d.v
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = d.v > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    // nil, identifier
+    b = 2
+
+    try:
+        a = nil > b
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    try:
+        a = b > nil
+        assert(0 and "hige")
+    catch TypeError:
+    end
+
+    /**************
+    * Ring Object *
+    **************/
+
+    // ring-object, int
+    // @see Int
+
+    // ring-object, float
+    // @see Float
+
+    // ring-object, string
+    // @see String
+
+    // ring-object, vec
+    // @see Vec
+
+    // ring-object, dict
+    // @see Dict
+
+    // ring-object, object
+    // @see Object
+
+    // ring-object, def-struct
+    // @see Def Struct
+
+    // ring-object, def
+    // @see Def
+
+    // ring-object, nil
+    // @see Nil
+
+    // ring-object, ring-object
+    d = { v: 2 }
+
+    a = d.v > d.v
+    assert(a == false)
+
+    d2 = { v: 3 }
+    a = d2.v > d.v
+    assert(a == true)
+
+    // ring-object, identifier
+    b = 1
+
+    a = d.v > b
+    assert(a == true)
+
+    a = b > d.v
+    assert(a == false)
+
+    /*************
+    * Identifier *
+    *************/
+
+    // identifier, int
+    // @see Int
+
+    // identifier, float
+    // @see Float
+
+    // identifier, string
+    // @see String
+
+    // identifier, vec
+    // @see Vec
+
+    // identifier, dict
+    // @see Dict
+
+    // identifier, object
+    // @see Object
+
+    // identifier, def-struct
+    // @see Def Struct
+
+    // identifier, def
+    // @see Def
+
+    // identifier, nil
+    // @see Nil
+
+    // identifier, ring-object
+    // @see Ring Object
+
+    // identifier, identifier
+    b = 1
+
+    a = b > b
+    assert(a == false)
+
+    c = 2
+    a = c > b
+    assert(a == true)
+end
+
+def caseAdd():
+    puts("$header caseAdd")
+
+    // Int, Int
+    assert(1 + 1 == 2)
+    assert(1 + 1 + 1 == 3)
+
+    // Int, Float
+    assert(1 + 1.2 == 2.2)
+    assert(1 + 1.2 + 2.3 == 4.5)
+
+    // Int, Nil
+    try:
+        1 + nil
+    catch TypeError as e:
+        assert(e.what() == "can't add with int")
+    end
+
+    try:
+        nil + 1
+    catch TypeError as e:
+        assert(e.what() == "can't add")
+    end
+
+    // Int, Str
+    try:
+        1 + "a"
+    catch TypeError as e:
+        assert(e.what() == "can't add with int")
+    end
+
+    try:
+        "a" + 1
+    catch TypeError as e:
+        assert(e.what() == "can't add 1 with string")
+    end
+
+    // Int, Struct
+    struct S: end
+
+    try:
+        1 + S
+    catch TypeError as e:
+        assert(e.what() == "can't add with int")
+    end
+
+    try:
+        S + 1
+    catch TypeError as e:
+        assert(e.what() == "can't add")
+    end
+
+    o = S()
+
+    try:
+        1 + o
+    catch TypeError as e:
+        assert(e.what() == "can't add with int")
+    end
+
+    try:
+        o + 1
+    catch TypeError as e:
+        assert(e.what() == "can't add")
+    end
+end
+
+def caseEscape():
+    puts("$header caseAdd")
+
+    a = 1 + \
+        1
+    assert(a == 2)
+
+    a = "abc" + \
+        "def"
+    assert(a == "abcdef")
+end
+
+def main(case):
+    from "tests/utils" import run
+
+    run(case, {
+        "case1": case1,
+        "case2": case2,
+        "and": caseAnd,
+        "or": caseOr,
+        "not": caseNot,
+        "eq": caseEq,
+        "neq": caseNotEq,
+        "lte": caseLtEq,
+        "gte": caseGtEq,
+        "lt": caseLt,
+        "gt": caseGt,
+        "add": caseAdd,
+        // "-": caseSub,
+        // "*": caseMul,
+        // "/": caseDiv,
+        // "%": caseMod,
+        // "+=": caseAddAss,
+        // "-=": caseSubAss,
+        // "*=": caseMulAss,
+        // "/=": caseDivAss,
+        // "%=": caseModAss,
+        "escape": caseEscape,
+    })
+end
+
+@}

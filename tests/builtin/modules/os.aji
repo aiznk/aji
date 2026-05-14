@@ -1,0 +1,100 @@
+{@
+header = "Test builtin/modules/os"
+
+import "os"
+
+def constants():
+    puts("$header constants")
+
+    assert(os.SEEK_SET == 0)
+    assert(os.SEEK_CUR == 1)
+    assert(os.SEEK_END == 2)
+    assert(os.EOF == -1)
+end
+
+def listdir():
+    puts("$header listdir")
+
+    files = os.listdir("./tests/builtin/modules/listdir")
+    assert(len(files) == 2)
+    assert(files[0] == "file1.txt")
+    assert(files[1] == "file2.txt")
+end
+
+def mkdir():
+    puts("$header mkdir")
+    
+    os.mkdir("./tests/builtin/module/mkdir")
+end
+
+def remove():
+    puts("$header remove")
+        
+    path = "./tests/builtin/modules/remove"
+    fout = open(path, "wt")
+    fout.write("hige")
+    fout.close()
+    os.remove(path)
+end
+
+def exists():
+    puts("$header exists")
+        
+    path = "./tests/builtin/modules/file"
+    fout = open(path, "wt")
+    fout.write("hige")
+    fout.close()
+    assert(os.exists(path))
+    os.remove(path)
+end
+
+def isfile():
+    puts("$header isfile")
+        
+    path = "./tests/builtin/modules/file"
+    fout = open(path, "wt")
+    fout.write("hige")
+    fout.close()
+    assert(os.isfile(path))
+    os.remove(path)
+end
+
+def isdir():
+    puts("$header remove")
+        
+    path = "./tests/builtin/modules/isdir"
+    os.mkdir(path)
+    assert(os.isdir(path))
+    os.remove(path)
+end
+
+def knock():
+    puts("$header knock")
+        
+    path = "./tests/builtin/modules/data/knock.txt"
+    if os.isfile(path):
+        os.remove(path)
+    end
+    assert(os.isfile(path) == false)
+
+    os.knock(path)
+
+    assert(os.isfile(path) == true)
+end
+
+cases = {
+    "constants": constants,
+    "listdir": listdir,
+    "mkdir": mkdir,
+    "remove": remove,
+    "exists": exists,
+    "isfile": isfile,
+    "isdir": isdir,
+    "knock": knock,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

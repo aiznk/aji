@@ -1,0 +1,298 @@
+{@
+/* CSV parser
+ * Parse CSV format text
+ * Since at 2021/07/26
+ *
+ *     CSV Mascot 
+ *
+ *     \( c s v )/ < Foo Hahhh!
+ *         | |
+ *         / >
+ */
+from "lib/stream.aji" import Stream
+
+struct CSV:
+    rows = []
+    tmpRow = []
+
+    /**
+     * Construct CSV object
+     *
+     * @return {Object}
+     */
+    def new():
+        return CSV()
+    end
+
+    /**
+     * Read and parse file from file name
+     * 
+     * @param[in] {Str} fname The file name 
+     */
+    met read(self, fname):
+        try:
+            fin = open(fname, "r")
+        catch OSError as e:
+            throw e
+        end
+
+        text = fin.read()
+        fin.close()
+        self.parse(text)
+    end
+
+    /**
+     * Add row record
+     * 
+     * @param {Vec} Record 
+     */
+    met addRow(self, record):
+        self.rows.push(record)
+    end
+
+    /**
+     * Pop row record from rows
+     * 
+     * @return {Vec|Nil} Popped row record
+     */
+    met popRow(self):
+        if len(self.rows):
+            return self.rows.pop()
+        else:
+            return nil
+        end
+    end
+
+    /**
+     * Get element as matrix 
+     *
+     * @param {Int} y Row index
+     * @param {Int} x Column index
+     * 
+     * @return {Object} Element
+     */
+    met getMat(self, y, x):
+        if not len(self.rows):
+            return nil
+        end
+
+        r = self.rows[y]
+        if not len(r):
+            return nil
+        end
+
+        return r[x]
+    end
+
+    /**
+     * Get row record
+     * 
+     * @param {Int} y Row index
+     * 
+     * @return {Vec} Record 
+     */
+    met getRow(self, y):
+        if not len(self.rows):
+            return nil
+        end
+
+        return self.rows[y]
+    end
+
+    /**
+     * Escape text elements
+     * 
+     * @param[in] {Str} txt Text 
+     * @return {Str} Escaped text
+     */
+    met escape(self, txt):
+        s = ""
+        for i = 0; i < len(txt); i += 1:
+            c = txt[i]
+            if c == "\"":
+                s += "\\\""
+            else:
+                s += c
+            end
+        end
+        return s
+    end
+
+    /**
+     * Stringify rows
+     * 
+     * @return {Str} Text
+     */
+    met stringify(self):
+        s = ""
+        for i = 0; i < len(self.rows); i += 1:
+            record = self.rows[i]
+            for j = 0; j < len(record) - 1; j += 1:
+                txt = Str(record[j])
+                txt = self.escape(txt)
+                elem = "\"" + txt + "\""
+                s += elem + ","
+            end
+            if len(record):
+                txt = Str(record[j])
+                txt = self.escape(txt)
+                elem = "\"" + txt + "\""
+                s += elem + "\n"
+            end
+        end
+        return s
+    end
+
+    /**
+     * Parse CSV text and save result to self.rows
+     * 
+     * @param[in] {Str} Text
+     */
+    met parse(self, text):
+        self.rows = []
+        self.tmpRow = []
+        text = self.fixNewlines(text)
+        self.strm = Stream.new(text)
+        self._csv()
+        if len(self.tmpRow):
+            self.rows.push(self.tmpRow)
+        end
+    end
+
+    /**
+     * Fix text's newlines
+     * CR + LF and CR to LF
+     *
+     * @param[in] {Str} text Source text
+     * @return {Str} Fixed text
+     */
+    met fixNewlines(self, text):
+        s = ""
+        strm = Stream.new(text)
+
+        for not strm.eof():
+            c1 = strm.get()
+            c2 = strm.cur(0)
+            if c1 == "\r" and c2 == "\n":
+                s += "\n"
+                strm.get()
+            elif c1 == "\r":
+                s += "\n"
+            else:
+                s += c1
+            end
+        end
+        return s
+    end
+
+    met _csv(self):
+        if self.strm.eof():
+            return
+        end
+
+        c = self.strm.get()
+        // puts("_csv[$c]")
+        if c == "\n":
+            if len(self.tmpRow):
+                // puts("push rows", len(self.tmpRow))
+                self.rows.push(self.tmpRow)
+                self.tmpRow = []
+            end
+            self._csv()
+        elif c == "\"":
+            self.strm.prev()
+            self._string()
+        elif c != ",":
+            self.strm.prev()
+            self._elem()
+        elif c == ",":
+            self.tmpRow.push("")
+            self._csv()
+        else:
+            self._csv()
+        end
+    end
+
+    met _string(self):
+        if self.strm.eof():
+            return
+        end
+
+        assert(self.strm.get() == "\"")
+
+        s = ""
+        for not self.strm.eof():
+            c = self.strm.get()
+            // puts("_string[$c]")
+            if c == "\"":
+                break
+            else:
+                s += c
+            end
+        end
+
+        // puts("push s[$s]")
+        self.tmpRow.push(s)
+        self._readAtSep()
+        self._csv()
+    end
+
+    met _elem(self):
+        if self.strm.eof():
+            return
+        end
+
+        elem = ""
+
+        for not self.strm.eof():
+            c = self.strm.get()
+            // puts("__elem c[$c]")
+            if c == ",":
+                if len(elem):
+                    self.tmpRow.push(elem)
+                    elem = ""
+                end
+                break
+            elif c == "\n":
+                if len(elem):
+                    self.tmpRow.push(elem)
+                    elem = ""
+                end
+                if len(self.tmpRow):
+                    self.rows.push(self.tmpRow)
+                    self.tmpRow = []
+                end
+                break
+            elif c == "\\":
+                elem += self.strm.get()
+            elif c == "\"":
+                self.strm.prev()
+                self._string()
+            else:
+                elem += c
+            end
+        end
+
+        if len(elem):
+            self.tmpRow.push(elem)
+        end
+
+        self._csv()
+    end
+
+    met _readAtSep(self):
+        for not self.strm.eof():
+            c = self.strm.get()
+            if c == ",":
+                break
+            elif c == "\n":
+                if len(self.tmpRow):
+                    self.rows.push(self.tmpRow)
+                    self.tmpRow = []
+                end
+                break
+            end
+        end
+    end
+end
+@}

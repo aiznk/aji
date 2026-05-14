@@ -1,0 +1,482 @@
+{@
+from "tests/utils" import run
+header = "Test builtin/functions"
+
+def case1():
+    // dance
+    puts("$header case1")
+
+    out, err = dance("{@ sum = 0 for i = 0; i < 4; i += 1: sum += i end puts(sum) @}")
+    assert(out == "6\n")
+    assert(err == nil)
+end
+
+def case2():
+    puts("$header case2")
+
+    assert(id)
+    assert(Str(type(id)) == "(builtin-function)")
+
+    assert(type)
+    assert(puts)
+    assert(eputs)
+    assert(len)
+    assert(die)
+    assert(exit)
+    assert(copy)
+    assert(deepcopy)
+    assert(assert)
+    assert(extract)
+    assert(setattr)
+    assert(getattr)
+    assert(dance)
+    assert(ord)
+    assert(chr)
+end
+
+def case3():
+    // getattr and setattr
+    puts("$header case3")
+
+    struct Animal: end
+
+    setattr(Animal, "name", "Tama")
+    a = Animal()
+    assert(a.name == "Tama")
+    assert(getattr(Animal, "name") == "Tama")
+end
+
+def case4():
+    // extract
+    puts("$header case4")
+
+    struct Walkable:
+        met walk(self):
+            return self.name + " walking"
+        end
+    end
+
+    struct Animal:
+        name = "Tama"
+        extract(Walkable)
+    end
+
+    animal = Animal()
+    puts(dir(animal))
+    puts(animal.walk)
+    assert(animal.walk() == "Tama walking")
+    assert(animal.name == "Tama")
+
+    struct Swimable:
+        met swim(self):
+            return self.name + " swiming"
+        end
+    end
+
+    struct Animal:
+        name = "Mike"
+        extract(Walkable, Swimable)
+    end
+
+    animal = Animal()
+    assert(animal.swim() == "Mike swiming")
+
+    d = { a: 1, b: 2 }
+    struct Cat:
+        extract(d)
+    end
+
+    assert(Cat.a == 1)
+    assert(Cat.b == 2)
+
+    enum Num:
+        A = 1
+        B = 2
+    end
+
+    struct Cat:
+        extract(Num)
+    end
+
+    assert(Cat.A == 1)
+    assert(Cat.B == 2)
+end
+
+def case5():
+    // ord and chr
+    puts("$header case5")
+
+    a = ord("A")
+    assert(a == 65)
+
+    a = chr(65)
+    assert(a == "A")
+
+    try:
+        ord(nil)
+    catch TypeError as e:
+        assert(type(e) == TypeError)
+    end
+end
+
+def case6():
+    // len
+    puts("$header case6")
+
+    a = [1, 2, 3]
+    assert(len(a) == 3)
+    assert(len("123") == 3)
+    assert(len(Bytes("123")) == 3)
+
+    try:
+        len(nil)
+    catch TypeError as e:
+        assert(type(e) == TypeError)
+    end
+end
+
+def case7():
+    // copy and deepcopy
+    puts("$header case7")
+
+    a = [0, 1]
+    b = [a, 2, 3]
+    c = copy(b)
+    assert(id(c[0]) != id(a))
+    assert(c[1] == 2)
+    assert(c[2] == 3)
+
+    c = deepcopy(b)
+    assert(id(c[0]) != id(a))
+    assert(c[1] == 2)
+    assert(c[2] == 3)
+end
+
+def case8():
+    puts("$header case8")
+
+    try:
+        die("die!")
+        assert(0 and "die")
+    catch ExitError as e:
+        assert(e.what() == "die")
+    end
+
+    try:
+        exit(1)
+        assert(0 and "exit")
+    catch ExitError as e:
+        assert(e.what() == "exit")
+    end
+end
+
+def case9():
+    puts("$header case9")
+
+    struct S:
+        a = 1
+        b = 2
+    end
+
+    o = S()
+    d = {
+        a: 1,
+        b: 2,
+    }
+
+    vec = dir(S)
+    puts(len(vec))
+    assert(len(vec) == 2)
+    assert(vec[0] == "a")
+    assert(vec[1] == "b")
+
+    vec = dir(o)
+    assert(len(vec) == 2)
+    assert(vec[0] == "a")
+    assert(vec[1] == "b")
+
+    vec = dir(d)
+    assert(len(vec) == 2)
+    assert(vec[0] == "a")
+    assert(vec[1] == "b")
+end
+
+def case10():
+    puts("$header case10")
+
+    a = const(1)
+    try:
+        a = 2
+        assert(0 and "a")
+    catch ConstError:
+    end
+
+    b = const([])
+    try:
+        b = 2
+        assert(0 and "b")
+    catch ConstError:
+    end
+
+    c = const([0])
+    try:
+        c[0] = 1
+        assert(0 and "c")
+    catch ConstError:
+    end
+
+    d = const({"a": 0})
+    try:
+        c["a"] = 1
+        assert(0 and "d")
+    catch ConstError:
+    end
+
+    struct E: end
+    const(E)
+    try:
+        E.a = 1
+        assert(0 and "E")
+    catch ConstError:
+    end
+
+    def f():
+        try:
+            fa = 1
+            assert(0, "fa")
+        catch ConstError:
+        end
+    end
+    const(f)
+    f()
+
+    g = const([0])
+    try:
+        g.push(1)
+        assert(0 and "g")
+    catch ConstError:
+    end
+    try:
+        g.pop()
+        assert(0 and "g 2")
+    catch ConstError:
+    end
+    try:
+        g.extend([3])
+        assert(0 and "g 3")
+    catch ConstError:
+    end
+    try:
+        g.insert(0, 4)
+        assert(0 and "g 4")
+    catch ConstError:
+    end
+
+    def i():
+        try:
+            h = [0]
+            assert(0 and "h")
+        catch ConstError:
+        end
+    end
+    const(i)
+    i()
+
+    def j():
+        try:
+            k = 0
+            assert(0 and "k")
+        catch ConstError:
+        end
+    end
+    const(j)
+    j()
+
+    struct L:
+        a = 1
+
+        met b(self):
+            try:
+                self.a = 2
+                assert(0 and "L.b")
+            catch ConstError:
+            end
+        end
+
+        met c(self):
+            try:
+                d = 4
+                assert(0 and "L.c")
+            catch ConstError:
+            end
+        end
+        const(c)
+    end
+
+    l = const(L())
+    l.b()
+    l.c()
+
+    vec = const([[0]])
+
+    try:
+        vec[0][0] = 1
+        assert(0 and "vec")
+    catch ConstError:
+    end
+
+    dic = const({ "a": { "b": 0 }})
+
+    try:
+        dic.a.b = 1
+        assert(0 and "dic")
+    catch ConstError:
+    end
+end
+
+def case11():
+    puts("$header case11")
+
+    a = 1
+    const(a)  // become read-only
+    
+    try:
+        a = 2  // ConstError occured
+        assert(0 and "case11 a")
+    catch ConstError:
+    end
+
+    unconst(a)
+    a = 3
+    assert(a == 3)
+end
+
+def caseSetall():
+    puts("$header caseSetall")
+
+    v = [1, 2, 3]
+    setall(v, true)
+    assert(v[0] == true)
+    assert(v[1] == true)
+    assert(v[2] == true)
+
+    d = {"a": 1, "b": 2}
+    setall(d, true)
+    assert(d["a"] == true)
+    assert(d["b"] == true)
+end
+
+def caseAny():
+    puts("$header caseAny")
+
+    assert(any([1, 1, 1]))
+    assert(any([1, 1, 0]))
+    assert(any([1, 0, 0]))
+    assert(not any([0, 0, 0]))
+
+    try:
+        any()
+    catch ArgumentsError as e:
+        assert(e.what() == "need one argument")
+    end
+
+    try:
+        any(1)
+    catch TypeError as e:
+        assert(e.what() == "invalid type")
+    end
+end
+
+def caseMap():
+    puts("$header caseMap")
+
+    def fn(v): return v * 2 end
+
+    result = map(fn, [1, 2, 3])
+    assert(len(result) == 3)
+    assert(result[0] == 2)
+    assert(result[1] == 4)
+    assert(result[2] == 6)
+
+    v = [1, 2, 3]
+    result = map(fn, v)
+    assert(len(result) == 3)
+    assert(result[0] == 2)
+    assert(result[1] == 4)
+    assert(result[2] == 6)
+    
+    try:
+        map(fn, nil)
+        assert(0 and "fail")
+    catch TypeError as e:
+        assert(e.what() == "invalid vector type")
+    end
+
+    try:
+        map(nil, [])
+        assert(0 and "fail")
+    catch TypeError as e:
+        assert(e.what() == "invalid function type")
+    end
+end
+
+def caseHas():
+    puts("$header caseHas")
+
+    d = { a: 1 }
+    assert(has(d, "a") == true)
+    assert(has(d, "b") == false)
+
+    struct A: a = 1 end
+    assert(has(A, "a") == true)
+    assert(has(A, "b") == false)
+
+    a = A()
+    assert(has(a, "a") == true)
+    assert(has(a, "b") == false)
+
+    import "tests/builtin/mod" as mod
+    assert(mod.a == 1)
+    assert(has(mod, "a") == true)
+    assert(has(mod, "b") == false)
+end
+
+def caseType():
+    puts("$header caseType")
+
+    assert(type(1) == Int)
+    assert(type(1.2) == Float)
+    assert(type("a") == Str)
+    assert(type([]) == Vec)
+    assert(type({}) == Dict)
+    assert(type(false) == Bool)
+    assert(type(nil) == Nil)
+    assert(type(Ptr()) == Ptr)
+
+    struct Box: end
+    box = Box()
+    assert(type(box) == Box)
+    assert(type(Box) == Box)
+end
+
+def main(name):
+    run(name, {
+        "case1": case1,
+        "case2": case2,
+        "case3": case3,
+        "case4": case4,
+        "case5": case5,
+        "case6": case6,
+        "case7": case7,
+        "case8": case8,
+        "case9": case9,
+        "case10": case10,
+        "case11": case11,
+        "caseSetall": caseSetall,
+        "caseAny": caseAny,
+        "caseMap": caseMap,
+        "caseHas": caseHas,
+        "caseType": caseType,
+    })
+end
+@}

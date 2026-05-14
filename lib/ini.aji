@@ -1,0 +1,205 @@
+{@
+/* INI parser
+ * Parse INI format text
+ * Since at 2021/07/27
+ */
+from "lib/stream.aji" import Stream
+from "lib/textfile.aji" import TextFile
+
+struct INI:
+    data = {}
+    cur_section = nil
+    mode = nil
+
+    /**
+     * Construct INI object
+     *
+     * @return {Obj}
+     */
+    def new():
+        return INI()
+    end
+
+    /**
+     * Load and parse file from file name
+     * 
+     * @param[in] {Str} fname The file name
+     */
+    met load(self, fname):
+        try:
+            fin = TextFile.open(fname, "r")
+        catch OSError as e:
+            throw e
+        end
+
+        lines = fin.readLines()
+        fin.close()
+
+        self.mode = "first"
+
+        for i = 0; i < len(lines); i += 1:
+            line = lines[i]
+            self.parseLine(line)
+        end
+    end
+
+    /**
+     * Save data to the file of the file name
+     * 
+     * @param[in] {Str} fname The file name
+     */
+    met save(self, fname):
+        text = self.dataToText()
+
+        try:
+            fout = open(fname, "w")
+        catch OSError as e:
+            throw e
+        end
+
+        fout.write(text)
+        fout.close()
+    end
+
+    /**
+     * Convert data to text
+     * 
+     * @return {Str} Text
+     */
+    met dataToText(self):
+        text = ""
+        keys = self.data.keys()
+
+        for i = 0; i < len(keys); i += 1:
+            section = keys[i]
+            text += "[$section]\n"
+            section = self.data[section]
+            skeys = section.keys()
+            for j = 0; j < len(skeys); j += 1:
+                name = skeys[j]
+                value = section[name]
+                text += "$name = $value\n"
+            end
+            text += "\n"
+        end
+
+        return text
+    end
+
+    /**
+     * If c is valid name character then return true else return false
+     * 
+     * @param[in] {Str} c Character (Str)
+     * @return {Bool}
+     */
+    met isNameChar(self, c):
+        return c.isalpha() or c.isdigit() or c == "_" or c == "-"
+    end
+
+    /**
+     * If c is valid value character then return true else return false
+     * 
+     * @param[in] {Str} c Character (Str)
+     * @return {Bool}
+     */
+    met isValueChar(self, c):
+        return not c.isspace()
+    end
+
+    /**
+     * Parse line
+     * 
+     * @param[in] {Str} line The line of strings
+     */
+    met parseLine(self, line):
+        section = ""
+        name = ""
+        value = ""
+
+        for i = 0; i < len(line); i += 1:
+            c = line[i]
+            // puts("[" + self.mode + "]", c)
+            if self.mode == "first":
+                if c == "[":
+                    self.mode = "read section"
+                    section = ""
+                end
+            elif self.mode == "read section":
+                if c == "]":
+                    self.mode = "read name"
+                    self.cur_section = section
+                else:
+                    section += c
+                end
+            elif self.mode == "read name":
+                if self.isNameChar(c):
+                    self.mode = "read name 2"
+                    name = c 
+                elif c == "[":
+                    self.mode = "read section"
+                end
+            elif self.mode == "read name 2":
+                if self.isNameChar(c):
+                    name += c
+                elif c.isspace():
+                    self.mode = "read name 3"
+                elif c == "=":
+                    self.mode = "read value"
+                end
+            elif self.mode == "read name 3":
+                if c == "=":
+                    self.mode = "read value"
+                end
+            elif self.mode == "read value":
+                if self.isValueChar(c):
+                    self.mode = "read value 2"
+                    value += c
+                end
+            elif self.mode == "read value 2":
+                if self.isValueChar(c):
+                    value += c
+                else:
+                    self.mode = "read name"
+                    if not self.data.has(self.cur_section):
+                        self.data[self.cur_section] = {}
+                    end
+                    self.data[self.cur_section][name] = value
+                end
+            end
+        end
+    end
+
+    /**
+     * Get value from section name and name
+     * If value is exists then return that value else return nil
+     * 
+     * @param[in] {Str} section The section name
+     * @param[in] {Str} name The name
+     * @return {nil|Str}
+     */
+    met get(self, section, name):
+        if not self.data.has(section):
+            return nil
+        end
+        if not self.data[section].has(name):
+            return nil
+        end
+        return self.data[section][name]
+    end
+
+    /**
+     * Set value to name in section
+     * 
+     * @param[in] {Str} section The section name
+     * @param[in] {Str} name The name
+     * @param[in] {Str} value The value
+     */
+    met set(self, section, name, value):
+        if not self.data.has(section):
+            self.data[section] = {}
+        end
+
+        self.data[section][name] = value
+    end
+end
+@}

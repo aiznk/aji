@@ -1,0 +1,254 @@
+{@
+    /**
+     * File structure
+     */
+    struct File:
+        fileno = nil  // number of file descriptor
+        mode = nil  // mode of file
+        filename = nil  // file name
+        buffer = ""  // buffer for stdout/stderr
+
+        /**
+         * Open file by file name and mode
+         *
+         * @param {str} fname file name
+         * @param {str} mode mode
+         * @return {object} file object
+         */
+        def open(fname, mode):
+            fp = File()
+            fp.fileno = 1
+            fp.mode = mode
+            fp.filename = fname
+            return fp, nil
+        end
+
+        /**
+         * Close file
+         *
+         * @param {object} fp file object
+         */
+        def close(fp):
+            fp.fileno = nil
+            fp.mode = nil
+            fp.filename = nil
+            fp.buffer = ""
+            return nil
+        end
+
+        /**
+         * Read file contents
+         *
+         * @param {object} fin file object
+         */
+        def read(fin):
+            return fin.filename, nil
+        end
+    end
+
+    /**
+     * Namespace of structure
+     */
+    struct template:
+        /**
+         * Render family name
+         *
+         * @param {str} familyName
+         */
+        def render(familyName): @}
+            This is my favorite things.
+            My family name is {: familyName :}.
+{@      end
+
+        /**
+         * Render family name verbose
+         *
+         * @param {str} familyName
+         */
+        def verboseRender(familyName): @}
+            Today is very funny day.
+            I'm very fine so I want to walk out side.
+            {: familyName :} takes shoes for me.
+{@      end
+    end
+
+    /**
+     * Structure and methods
+     */
+    struct Animal:
+        name = nil
+
+        /**
+         * Proxy constructor (function)
+         *
+         * @param {str} name animal's name
+         * @return {object} object of Animal
+         */
+        def new(name):
+            return Animal(name)
+        end
+
+        /**
+         * Show name
+         */
+        met show(self):
+            name = self.name
+            if type(name) != "str":
+                name = "Unknown"
+            end
+            puts("my name is", name.capitalize())
+        end
+
+        /**
+         * Decolation name with head and tail
+         *
+         * @param {str} head
+         * @param {str} tail
+         * @return {str} decolated name
+         */
+        met decolate(self, head, tail):
+            return head + self.name + tail
+        end
+    end
+
+    struct Stream:
+        buf = nil
+        length = 0
+        index = 0
+
+        def new(buf):
+            return Stream(buf, len(buf))
+        end
+
+        met cur(self, ofs):
+            i = self.index + ofs
+            if i < 0 or i >= self.length:
+                return nil
+            end
+            return self.buf[i]
+        end
+
+        met next(self):
+            if self.index >= self.length:
+                return 
+            end
+            self.index += 1
+        end
+
+        met prev(self):
+            if self.index <= 0:
+                return 
+            end
+            self.index -= 1
+        end
+
+        met eof(self):
+            return self.index < 0 or self.index >= self.length
+        end
+
+        met get(self):
+            if self.eof():
+                return nil
+            end
+            c = self.buf[self.index]
+            self.next()
+            return c
+        end
+    end
+
+    /********************
+    * Interface methods *
+    ********************/
+
+    met metWalk(self):
+        puts(self.name, "is walking")
+    end
+
+    met metSleep(self):
+        puts(self.name, "is sleeping")
+    end
+
+    struct Tiger:
+        name = "Tiger"
+        walk = metWalk
+        sleep = metSleep
+    end
+
+    /*****************
+    * Test functions *
+    *****************/
+
+    def test1():
+        puts("Testing File structure")
+
+        fin, err = File.open("file.txt", "r")
+        if err != nil:
+            eputs("failed to open file")
+            return
+        end
+
+        contents, err = File.read(fin)
+        if err != nil:
+            eputs("failed to read contents")
+            return
+        end
+
+        puts(contents)
+
+        err = File.close(fin)
+        if err != nil:
+            eputs("failed to close file")
+            return
+        end
+
+        puts("-" * 40)
+    end
+
+    def test2():
+        puts("Testing template namespace")
+
+        template.render("blue")
+        T = template
+        T.verboseRender("red")
+
+        puts("-" * 40)
+    end
+
+    def test3():
+        puts("Testing struct methods")
+
+        animal = Animal.new("Mike")
+        animal.show()
+        puts(animal.decolate("The ", " Man"))
+
+        puts("-" * 40)
+    end
+
+    def test4():
+        puts("Testing stream")
+
+        strm = Stream.new("abc")
+        puts(strm.get())
+        puts(strm.get())
+        puts(strm.get())
+        puts(strm.get())
+
+        puts("-" * 40)
+    end
+
+    def test5():
+        puts("Testing interface methods")
+
+        tiger = Tiger()
+        tiger.walk()
+        tiger.sleep()
+
+        puts("-" * 40)
+    end
+
+    test1()
+    test2()
+    test3()
+    test4()
+    test5()
+@}

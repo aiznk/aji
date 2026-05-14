@@ -1,0 +1,41 @@
+{@
+from "textfile" import TextFile
+
+header = "Test lib/textfile"
+
+def caseReadLines():
+    puts("$header readLines")
+    
+    fp = TextFile.open("tests/open/file1.txt", "r")
+    lines = fp.readLines()
+    assert(len(lines) == 3)
+    assert(lines[0] == "aaa\n")
+    assert(lines[1] == "bbb\n")
+    assert(lines[2] == "ccc\n")
+    fp.close()
+end
+
+def caseReadLine():
+    puts("$header caseReadLine")
+
+    fp = TextFile.open("tests/open/file1.txt", "r")
+    line = fp.readLine()
+    assert(line == "aaa\n")
+    fp.close()
+
+    fp = TextFile.open("tests/open/jp1.txt", "r")
+    line = fp.readLine()
+    // assert(line == "日本語\n")  // TODO: fix me!
+    fp.close()
+end
+
+cases = {
+    "readLines": caseReadLines,
+    "readLine": caseReadLine,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

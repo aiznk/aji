@@ -1,0 +1,7 @@
+{@
+    import "tests/lang/modules/vector.aji" as vecMod
+
+    def func(arg):
+        return arg
+    end
+@}

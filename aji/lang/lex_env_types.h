@@ -1,0 +1,11 @@
+#pragma once
+
+typedef enum {
+    AJI_LEX_ENV_TYPE__ROOT,
+    AJI_LEX_ENV_TYPE__MODULE,
+    AJI_LEX_ENV_TYPE__FUNC,
+    AJI_LEX_ENV_TYPE__DEF_STRUCT,
+    AJI_LEX_ENV_TYPE__OBJECT,
+    AJI_LEX_ENV_TYPE__BLOCK_STMT,
+    AJI_LEX_ENV_TYPE__ENUM,
+} AjiLexEnvType;

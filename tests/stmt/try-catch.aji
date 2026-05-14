@@ -1,0 +1,161 @@
+{@
+
+header = "Test stmt/try-catch"
+
+def case1():
+    puts("$header case1")
+
+    try:
+    catch:
+    end
+
+    try:
+        a = 1
+        assert(a == 1)
+    catch:
+    end
+
+    try:
+        1 += 1
+    catch:
+        assert(1)
+    end
+end
+
+def case2():
+    puts("$header case2")
+
+    try:
+        2 += 2
+    catch TypeError:
+    end
+end
+
+def case2_2():
+    puts("$header case2_2")
+
+    try:
+        2 += 2
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (1)")
+    end
+end
+
+def case2_3():
+    puts("$header case2_3")
+
+    try:
+        2 += 2
+    catch ValueError:
+        puts("ValueError")
+    catch TypeError as e:
+        puts(e.what())
+        assert(e.what() == "invalid left hand operand (1)")
+    end
+end
+
+def case2_4():
+    puts("$header case2_4")
+
+    try:
+        2 += 2
+    catch TypeError as e:
+        try:
+            3 += 3
+        catch TypeError as e:
+        end
+    end
+end
+
+def case3():
+    puts("$header case3")
+
+    try:
+        3 += 3
+    catch (ValueError, TypeError) as e:
+        assert(Str(e) == "(object)")
+    end
+end
+
+def case3_2():
+    puts("$header case3")
+
+    try:
+        3 += 3
+    catch (ValueError, TypeError) as e:
+        assert(Str(e) == "(object)")
+        def func():
+            try:
+                a += 4
+            catch TypeError:
+            end
+        end
+
+        try:
+            func()
+        catch LookUpError as e:
+            assert(e.what() == "\"a\" is not defined")
+        end
+    end
+end
+
+def case4():
+    puts("$header case4")
+
+    def func(a):
+        if a == 1:
+            return a
+        else:
+            throw ValueError("invalid value")
+        end
+    end
+
+    try:
+        result = func(1)
+    catch:
+        puts("fail")
+    end
+
+    try:
+        result = func(2)
+    catch ValueError as e:
+        assert(e.what() == "invalid value")
+    end
+end
+
+def case5():
+    puts("$header case5")
+
+    struct S:
+        met f(self):
+            try:
+                fin = open("tests/open/file1.txt", "r")
+            catch OSError as e:
+                puts(e.what())
+            end
+            fin.close()
+        end
+    end
+
+    s = S()
+    s.f()
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case2_2": case2_2,
+    "case2_3": case2_3,
+    "case2_4": case2_4,
+    "case3": case3,
+    "case3_2": case3_2,
+    "case4": case4,
+    "case5": case5,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+
+@}

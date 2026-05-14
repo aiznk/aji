@@ -1,0 +1,15 @@
+{@
+def main():
+    struct Walkable:
+        met walk(self):
+            return 1
+        end
+    end
+
+    struct Animal:
+        extract(Walkable)
+    end
+
+    return Animal.walk()
+end
+@}

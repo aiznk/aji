@@ -1,0 +1,102 @@
+{@
+header = "Test unicode/unicode"
+
+def caseRStrip():
+    puts("$header caseRStrip")
+    
+    s = "123  "
+    assert(s == "123  ")
+    assert(len(s) == 5)
+    s = s.rstrip()
+    assert(s == "123")
+    puts("len", len(s))
+    assert(len(s) == 3)
+end
+
+def caseStartsWith():
+    puts("$header caseStartsWith")
+
+    s = "this.is.a.pen"
+    assert(s.startswith("this.") == true)
+    assert(s.startswith("that.") == false)
+end
+    
+def caseEndsWith():
+    puts("$header caseEndsWith")
+
+    s = "this.is.a.pen"
+    assert(s.endswith(".pen") == true)
+    assert(s.endswith(".dog") == false)
+end
+    
+def caseSplit():
+    puts("$header caseSplit")
+
+    v = "".split(",")
+    assert(len(v) == 1)
+    assert(v[0] == "")
+
+    v = "1,23,456".split(",")
+    assert(len(v) == 3)
+    assert(v[0] == "1")
+    assert(v[1] == "23")
+    assert(v[2] == "456")
+
+    s = ""
+    for i = 0; i < 100; i += 1:
+        s += Str(i) + ","
+    end
+
+    v = s.split(",")
+    assert(len(v) == 101)
+
+    v = "123\n\nabc".split("\n")
+    assert(len(v) == 3)
+    assert(v[0] == "123")
+    assert(v[1] == "")
+    assert(v[2] == "abc")
+end
+
+def caseJoin():
+    puts("$header caseJoin")
+
+    s = ",".join([1, "2", 3])
+    assert(s == "1,2,3")
+
+    s = ",".join([])
+    assert(s == "")
+
+    try:
+        ",".join()
+    catch ArgumentsError as e:
+        assert(e.what() == "need one argument")
+    end
+end
+
+def caseFind():
+    puts("$header caseFind")
+
+    assert("abc".find("a") == 0)
+    assert("abc".find("b") == 1)
+    assert("abc".find("c") == 2)
+    assert("abc".find("d") == -1)
+
+    assert("abcdef".find("bcd") == 1)
+    assert("abcdef".find("def") == 3)
+    assert("abcdef".find("ABC") == -1)
+end
+
+cases = {
+    "rstrip": caseRStrip,
+    "startswith": caseStartsWith,
+    "endswith": caseEndsWith,
+    "split": caseSplit,
+    "join": caseJoin,
+    "find": caseFind,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

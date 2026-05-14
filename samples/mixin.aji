@@ -1,0 +1,40 @@
+{@
+    struct Mixin:
+        met show(self):
+            puts("My name is", self.name)
+        end
+
+        met walk(self):
+            puts(self.name, "is walking")
+        end
+    end
+
+    struct Animal:
+        name = "Tama"
+        extract(Mixin)
+    end
+
+    animal = Animal()
+    animal.show()  // My name is Tama
+    animal.walk()  // Tama is walking
+
+    struct A:
+        met show(self):
+            puts("A is", self.name)
+        end
+    end
+
+    struct B:
+        met show(self):
+            puts("B is", self.name)
+        end
+    end
+
+    struct Robot:
+        name = "Dora"
+        extract(A, B)
+    end
+
+    robot = Robot()
+    robot.show()  // B is Dora
+@}

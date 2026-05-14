@@ -1,0 +1,78 @@
+{@
+header = "Test other/other"
+
+def case1():
+    puts("$header case1")
+
+    // Bubble sort program
+    vec = [3, 2, 4, 1]
+    k = 0
+    flag = true
+
+    for flag:
+        flag = false
+        for i = 0; i < len(vec) - 1 - k; i += 1:
+            if vec[i] > vec[i + 1]:
+                tmp = vec[i]
+                vec[i] = vec[i + 1]
+                vec[i + 1] = tmp
+                flag = true
+            end
+        end
+        k += 1
+    end
+
+    for i = 0; i < len(vec); i += 1:
+        puts(vec[i])
+    end
+end
+
+def case2():
+    struct Animal:
+        name = nil
+
+        def new(name):
+            return Animal(name)
+        end
+
+        met getName(self):
+            return self.name
+        end
+    end
+
+    animal = Animal.new("Tama")
+    puts(animal.getName())
+end
+
+def case3():
+    def base(title):
+        block header: @}
+            <h1>{: title :}</h1>
+        {@ end
+
+        block content:
+        end
+    end
+
+    def index(title) extends base:
+        inject content: @}
+            <p>Welcome to my homepage!</p>
+        {@ end
+
+        super(title)
+    end
+
+    index("Aji")
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

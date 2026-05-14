@@ -1,0 +1,351 @@
+/**
+ * Aji
+ *
+ * License: MIT
+ *  Author: noname
+ *   Since: 2016
+ */
+#include <aji/lib/error.h>
+
+typedef struct {
+    // t ... token ('abc' | '/path/to/dir')
+    // d ... dot ('.')
+    // s ... space (' ')
+    char type;
+    AjiStr *token;
+} err_AjiTok;
+
+static err_AjiTok *
+gen_token(char type, AjiStr *move_token) {
+    err_AjiTok *tok = AjiMem_Calloc(1, sizeof(*tok));
+    if (!tok) {
+        return NULL;
+    }
+
+    tok->type = type;
+    tok->token = AjiMem_Move(move_token);
+
+    return tok;
+}
+
+static char
+infer_type(const AjiStr *tok) {
+    if (!AjiStr_Len(tok)) {
+        return 0;
+    }
+
+    const char *s = AjiStr_Getc(tok);
+    char last = s[strlen(s) - 1];
+    switch (last) {
+    default: return 't'; break;
+    case '.': return 'd'; break;
+    case ' ': return 's'; break;
+    }
+}
+
+static err_AjiTok **
+tokenize(const char *src) {
+    int32_t capa = 4;
+    int32_t cursize = 0;
+    err_AjiTok **tokens = AjiMem_Calloc(capa + 1, sizeof(err_AjiTok *));
+    if (!tokens) {
+        return NULL;
+    }
+    AjiStr *buf = AjiStr_New();
+    char bef = 0;
+
+#define push(t) \
+    if (cursize >= capa) { \
+        int32_t nbyte = sizeof(err_AjiTok); \
+        capa *= 2; \
+        err_AjiTok **tmp = AjiMem_Realloc(tokens, capa * nbyte + nbyte); \
+        if (!tmp) { \
+            free(tokens); \
+            return NULL; \
+        } \
+        tokens = tmp; \
+    } \
+    tokens[cursize++] = t; \
+    tokens[cursize] = NULL; \
+
+#define store \
+    if (AjiStr_Len(buf)) { \
+        char type = infer_type(buf); \
+        err_AjiTok *tok = gen_token(type, AjiMem_Move(buf)); \
+        if (!tok) { \
+            return NULL; \
+        } \
+        push(tok); \
+        buf = AjiStr_New(); \
+    } \
+
+    for (const char *p = src; *p; ++p) {
+        if (*p == ' ') {
+            store;
+            if (bef != *p) {
+                AjiStr_PushBack(buf, *p);
+                store;
+            }
+        } else if (*p == '.') {
+            store;
+            for (; *p == '.'; ++p) {
+                AjiStr_PushBack(buf, *p);
+            }
+            --p;
+            store;
+        } else if (*p == '"') {
+            store;
+            AjiStr_PushBack(buf, *p++);
+            for (; *p; ++p) {
+                if (*p == '\\') {
+                    AjiStr_PushBack(buf, *p++);
+                    AjiStr_PushBack(buf, *p);
+                } else if (*p == '"') {
+                    AjiStr_PushBack(buf, *p);
+                    break;
+                } else {
+                    AjiStr_PushBack(buf, *p);
+                }
+            }            
+        } else {
+            AjiStr_PushBack(buf, *p);
+        }
+
+        bef = *p;
+    }
+
+    store;
+
+    AjiStr_Del(buf);
+    return tokens;
+}
+
+static bool
+look_fname_ext(err_AjiTok **p) {
+    for (; *p; ++p) {
+        err_AjiTok *tok = *p;
+        err_AjiTok *second = *(p + 1);
+        char next = 0;
+        if (second) {
+            next = second->type;
+        }
+        if (tok->type == 's') {
+            return false;
+        } else if (tok->type == 'd' && (next != 's' && next != 0)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void
+AjiErr_FixTxt(char *dst, uint32_t dstsz, const char *src) {
+    const char *deb = getenv("ERROR_DEBUG");
+    bool debug = deb && deb[0] == '1';
+    int m = 0;
+
+    err_AjiTok **tokens = tokenize(src);
+    if (!tokens) {
+        return;
+    }
+
+    for (err_AjiTok **p = tokens; *p; ++p) {
+        err_AjiTok *tok = *p;
+        if (debug) {
+            printf("m[%d] type[%c] token[%s]\n", m, tok->type, AjiStr_Getc(tok->token));
+        }
+
+        switch (m) {
+        case 0:  // ended of dot
+            if (tok->type == 't') {
+                if (!look_fname_ext(p)) {
+                    AjiStr *copied = AjiStr_Capi(tok->token);
+                    AjiCStr_App(dst, dstsz, AjiStr_Getc(copied));
+                    AjiStr_Del(copied);
+                } else {
+                    AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+                }
+                m = 10;
+            } else if (tok->type == 's') {
+                // pass
+            } else if (tok->type == 'd') {
+                // pass
+            }
+            break;
+        case 10:  // found token
+            if (tok->type == 't') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+            } else if (tok->type == 's') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+            } else if (tok->type == 'd') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+                m = 20;
+            }
+            break;
+        case 20:  // found token -> dot
+            if (tok->type == 't') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+            } else if (tok->type == 's') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+                m = 0;
+            } else if (tok->type == 'd') {
+                AjiCStr_App(dst, dstsz, AjiStr_Getc(tok->token));
+            }
+            break;
+        }
+    }
+
+    int32_t dstlen = strlen(dst);
+    if (dst[dstlen - 1] == ' ') {
+        dst[dstlen - 1] = '\0';
+        dstlen--;
+    }
+    if (dst[dstlen - 1] != '.') {
+        AjiCStr_App(dst, dstsz, ".");
+    }
+
+    for (err_AjiTok **tok = tokens; *tok; ++tok) {
+        AjiStr_Del((*tok)->token);
+        free(*tok);
+    }
+    free(tokens);
+}
+
+static void
+errorap_unsafe(const char *title, va_list ap, const char *fmt) {
+	fflush(stdout);
+
+	uint32_t fmtlen = strlen(fmt);
+
+	if (title != NULL && strlen(title)) {
+        AjiTerm_CFPrintf(stderr,
+            AJI_TERM__RED, AJI_TERM__NULL, AJI_TERM__NULL,
+            "%c%s" , toupper(title[0]), title+1);
+        fprintf(stderr, ": ");
+	}
+
+	if (fmtlen) {
+        char tmp[1024 * 5] = {0},
+             msg[1024 * 5] = {0};
+		vsnprintf(tmp, sizeof tmp, fmt, ap);
+        AjiErr_FixTxt(msg, sizeof msg, tmp);
+		fprintf(stderr, "%s", msg);
+        if (strlen(msg) && msg[strlen(msg)-1] != '.') {
+            fprintf(stderr, ".");
+        }
+	}
+
+	if (errno != 0) {
+		fprintf(stderr, " %s. ", strerror(errno));
+	}
+
+	fprintf(stderr, "\n");
+	fflush(stderr);
+}
+
+static const char *
+fmttoupper_unsafe(char *dst, uint32_t dstsz, const char *fmt) {
+	if (isalpha(fmt[0])) {
+		snprintf(dst, dstsz, "%c%s", toupper(fmt[0]), fmt+1);
+		return dst;
+	}
+
+	return fmt;
+}
+
+bool
+AjiErr_LogUnsafe(const char *file, long line, const char *func, const char *type, const char *msg) {
+	// Check arguments
+	type = (type ? type : "type");
+	msg = (msg ? msg : "");
+
+	FILE *fout = stderr;
+	uint32_t msglen = strlen(msg);
+
+	// Datetime
+	time_t tim = time(NULL);
+	struct tm tm = *localtime(&tim);
+	fprintf(fout, "%d-%d-%d %d:%d:%d",
+		tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+	// Messages
+	fprintf(fout, ": %c%s: %s: %ld: %s", toupper(type[0]), type+1, file, line, func);
+
+	if (errno != 0) {
+		fprintf(fout, ": %s", strerror(errno));
+	}
+
+	if (msglen) {
+		fprintf(fout, ": %c%s", toupper(msg[0]), msg+1);
+		if (msg[msglen-1] != '.') {
+			fprintf(fout, ".");
+		}
+	} else {
+		fprintf(fout, ".");
+	}
+
+	fprintf(fout, "\n");
+	fflush(fout);
+	return true;
+}
+
+void
+_AjiErr_Die(
+	const char *fname,
+	int32_t line,
+	const char *funcname,
+	const char *fmt,
+	...
+) {
+	char tmp[1024];
+	fmt = fmttoupper_unsafe(tmp, sizeof tmp, fmt);
+
+	char head[1024];
+	snprintf(head, sizeof head, "die: %s: %d: %s:", fname, line, funcname);
+
+	va_list ap;
+	va_start(ap, fmt);
+	errorap_unsafe(head, ap, fmt);
+	va_end(ap);
+
+	exit(EXIT_FAILURE);
+}
+
+void
+AjiErr_Err(const char *fmt, ...) {
+	char tmp[1024];
+	fmt = fmttoupper_unsafe(tmp, sizeof tmp, fmt);
+
+	va_list ap;
+	va_start(ap, fmt);
+	errorap_unsafe("error", ap, fmt);
+	va_end(ap);
+}
+
+void
+AjiErr_Warn(const char *fmt, ...) {
+	char tmp[1024];
+	fmt = fmttoupper_unsafe(tmp, sizeof tmp, fmt);
+
+	va_list ap;
+	va_start(ap, fmt);
+	errorap_unsafe("warn", ap, fmt);
+	va_end(ap);
+}
+
+void
+AjiErr_Debug(const char *fmt, ...) {
+	const char *isdeb = getenv("CAP_DEBUG");
+	if (!isdeb || (isdeb && *isdeb == '0')) {
+		return;
+	}
+
+	char tmp[1024];
+	fmt = fmttoupper_unsafe(tmp, sizeof tmp, fmt);
+
+	va_list ap;
+	va_start(ap, fmt);
+	errorap_unsafe("debug", ap, fmt);
+	va_end(ap);
+}

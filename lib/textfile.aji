@@ -1,0 +1,102 @@
+{@
+import "os"
+
+/**
+ * Text file wrapper
+ */
+struct TextFile:
+    fp = nil
+
+    /**
+     * @brief Open file by the file name and the mode
+     * 
+     * @param[in] {Str} fname File name
+     * @param[in] {Str} mode Open mode
+     * @return {TextFile}
+     */
+    def open(fname, mode):
+        self = TextFile()
+        self.fp = open(fname, mode)
+        return self
+    end
+
+    /**
+     * @brief Close file
+     */
+    met close(self):
+        if self.fp:
+            self.fp.close()
+            self.fp = nil
+        end
+    end
+
+    /**
+     * @brief Read lines from file
+     * 
+     * @return {Vec} Readed lines
+     */
+    met readLines(self):
+        s = self.fp.read()
+        vec = []
+        line = ""
+
+        for i = 0; i < len(s); i += 1:
+            c = s[i]
+            if c == "\r" and i < len(s) - 1 and s[i + 1] == "\n":
+                i += 1
+                line += "\r\n"
+                vec.push(line)
+                line = ""
+            elif c == "\r":
+                line += "\r"
+                vec.push(line)
+                line = ""
+            elif c == "\n":
+                line += "\n"
+                vec.push(line)
+                line = ""
+            else:
+                line += c
+            end
+        end
+
+        return vec
+    end
+
+    /**
+     * @brief Read one line from file
+     * 
+     * @return {Str} Readed line
+     */
+    met readLine(self):
+        pos = self.fp.tell()
+        line = ""
+
+        for:
+            c = self.fp.read(1)
+            if c == os.EOF:
+                break
+            end
+            if c == "\r":
+                pos = self.fp.tell()
+                c = self.fp.read(1)
+                if c == "\n":
+                    line += "\r\n"
+                    break
+                else:
+                    self.fp.seek(pos, os.SEEK_SET)
+                    line += "\r"
+                    break
+                end
+            elif c == "\n":
+                line += "\n"
+                break
+            end
+
+            line += c
+        end
+
+        return line
+    end
+end
+@}

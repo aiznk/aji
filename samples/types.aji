@@ -1,0 +1,25 @@
+{@
+    vec = Vec()
+    assert(len(vec) == 0)
+    puts("Vec", vec)
+    
+    dict = Dict()
+    assert(len(dict) == 0)
+    puts("Dict", dict)
+
+    str = Str()
+    assert(len(str) == 0)
+    puts("Str", str)
+
+    b = Bool()
+    assert(b == false)
+    puts("Bool", b)
+
+    i = Int()
+    assert(i == 0)
+    puts("Int", i)
+
+    f = Float()
+    assert(f == 0.0)
+    puts("Float", f)
+@}

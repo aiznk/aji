@@ -1,0 +1,9 @@
+{@
+    import "io"
+
+    try:
+        io.readfile("./samples/readfile.aji") # puts($r)
+    catch OSError as e:
+        eputs(e.what())
+    end
+@}

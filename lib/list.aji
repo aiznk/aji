@@ -1,0 +1,134 @@
+{@
+/*
+ * A simple list
+ * Since: 2020/10/09
+ */
+
+/**
+ * Node of list
+ */
+struct Node:
+    value = nil  // value of node
+    next = nil  // next node
+end
+
+/**
+ * Linked list structure
+ */
+struct List:
+    head = nil
+
+    /**
+     * Get length of list
+     *
+     * @return number of length
+     */
+    met __len__(self):
+        length = 0
+        for cur = self.head; cur; cur = cur.next:
+            length += 1
+        end
+        return length
+    end
+
+    /**
+     * Dump list elements at stdout 
+     */
+    met dump(self):
+        if self.head == nil:
+            return 
+        end
+
+        for cur = self.head; cur; cur = cur.next:
+            puts(cur.value)            
+        end
+    end
+
+    /**
+     * Push element at tail of list
+     *
+     * @param[in] obj element 
+     */
+    met push(self, obj):
+        if self.head == nil:
+            self.head = Node(obj)
+            return 
+        end
+
+        tail = nil
+        for cur = self.head; cur; cur = cur.next:
+            if cur.next == nil:
+                tail = cur
+                break
+            end
+        end
+        assert(tail)
+
+        tail.next = Node(obj)
+    end
+
+    /**
+     * Insert element at index position
+     * 
+     * @param[in] index number of index
+     * @param[in] obj   element
+     */
+    met insert(self, index, obj):
+        i = 0
+        prev = nil
+        for cur = self.head; ; cur = cur.next:
+            if index == i:
+                // insert node
+                node = Node(obj)
+                if prev == nil:
+                    head = self.head
+                    node.next = head
+                    self.head = node
+                elif cur == nil:
+                    prev.next = node
+                else:
+                    next = prev.next
+                    node.next = next
+                    prev.next = node
+                end
+                break
+            end
+            if cur == nil:
+                break
+            end
+            prev = cur
+            i += 1
+        end
+    end
+
+    /**
+     * Pop element from tail of list
+     * 
+     * @return element|nil 
+     */
+    met pop(self):
+        if self.head == nil:
+            return nil
+        end
+
+        tail = nil
+        prev = nil
+        for cur = self.head; cur; cur = cur.next:
+            if cur.next == nil:
+                tail = cur
+                break
+            end
+            prev = cur
+        end
+        assert(tail)
+
+        if prev == nil:
+            self.head = nil
+            return tail.value
+        else:
+            prev.next = nil
+            return tail.value
+        end
+    end
+end
+@}

@@ -1,0 +1,151 @@
+{@
+header = "Test def/func"
+
+def case1():
+    puts("$header case1")
+
+    def func(a):
+        return a
+    end
+
+    i = 0
+    j = func(i)
+    assert(i == j)
+    assert(id(i) != id(j))
+end
+
+def case2():
+    puts("$header case2")
+
+    def func(a):
+        return a, a
+    end
+
+    i = 0
+    j, k = func(i)
+    assert(i == j and i == k and j == k)
+    assert(id(i) != id(j))
+    assert(id(i) != id(k))
+    assert(id(j) == id(k))  // ここの仕様はちょっと気持ち悪い気がする
+end
+
+def case3():
+    puts("$header case3")
+
+    // Test of function in function
+
+    def f1(a):
+        def f2():
+            return a
+        end
+        return f2()
+    end
+
+    assert(f1(1) == 1)
+end
+
+def case4():
+    puts("$header case4")
+
+    // Test of function in function
+
+    def f1(a):
+        def f2():
+            nonlocal a
+            return a
+        end
+        return f2()
+    end
+
+    assert(f1(1) == 1)
+end
+
+def case5():
+    puts("$header case5")
+
+    def f1(a):
+        def f2():
+            return a
+        end
+        return f2
+    end
+
+    assert(f1(1)() == 1)
+end
+
+def case6():
+    puts("$header case6")
+
+    // Test of function in function
+
+    def f1(a):
+        struct S:
+            met f2(self):
+                return a
+            end
+        end
+        return S()
+    end
+
+    assert(f1(1).f2() == 1)
+
+    def f1(a):
+        struct S:
+            b = a
+        end
+        return S()
+    end
+
+    assert(f1(1).b == 1)
+end
+
+def case7():
+    puts("$header case7")
+
+    def f1():
+    end
+
+    def f2():
+        // this scope ignore before scope (case7)
+        // so f2 can't find f1 definition
+        f1()
+    end
+
+    assert(f2() == nil)
+end
+
+def case8():
+    puts("$header case8")
+
+    def f1():
+        b = 2
+        def f2():
+            return b
+        end
+
+        def f3():
+            return f2()
+        end
+
+        return f3()
+    end
+
+    assert(f1() == 2)
+end
+
+cases = {
+    "case1": case1,
+    "case2": case2,
+    "case3": case3,
+    "case4": case4,
+    "case5": case5,
+    "case6": case6,
+    "case7": case7,
+    "case8": case8,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

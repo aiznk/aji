@@ -1,0 +1,14 @@
+{@
+
+met hige(self):
+    puts(self["hoge"])
+end
+
+d = {
+    "hige": hige,
+    "hoge": 1,
+}
+
+d.hige()
+
+@}

@@ -1,0 +1,26 @@
+{@
+    from "samples/mysite/templates/base.aji" import base
+    
+    def blog(context) extends base:
+        articles = context.articles
+
+        inject content: @}
+            <h1>About of my blog</h1>
+            <p>This Blog made by Aji.</p>
+           
+            {@ for i = 0; i < len(articles); i += 1:
+                    article = articles[i] @}
+                <h1>{: article.title :}</h1>
+                <article>{: article.content :}</article> 
+            {@ end @}
+        {@ end
+
+        return super(context)
+    end
+
+    blog({
+        "siteName": siteName,
+        "description": description,
+        "articles": articles,
+    })
+@}

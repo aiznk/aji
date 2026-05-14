@@ -1,0 +1,25 @@
+{@
+    /**
+     * Run function with argument
+     *
+     * @param[in] {int} arg the argument
+     */
+    def run(arg):
+        if arg != 1:
+            throw ValueError("invalid value")
+        end
+
+        return arg
+    end
+
+    // non error
+    result = run(1)
+    puts(result)
+
+    // errors occured
+    try:
+        result = run(0)
+    catch ValueError as e:
+        puts(e.what())
+    end
+@}

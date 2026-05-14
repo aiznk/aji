@@ -1,0 +1,29 @@
+{@
+header = "Test closure/closure"
+
+def case1():
+    puts("$header case1")
+
+    def f():
+        i = 1
+        def closure():
+            puts(i)  // "i" is not defined
+        end
+        closure()
+    end
+
+    try:
+        f()
+    catch LookUpError:
+    end
+end
+
+cases = {
+    "case1": case1,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

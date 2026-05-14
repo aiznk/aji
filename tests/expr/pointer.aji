@@ -1,0 +1,1158 @@
+{@
+header = "Test expr/pointer"
+
+def casePtr():
+    puts("$header ptr")
+
+    // variable and pointer
+    a = 1
+    ptr = &a
+    assert(*ptr == 1)
+    assert(id(ptr) != id(a))
+    assert(id(*ptr) == id(a))
+
+    *ptr += 1
+    assert(a == 2)
+
+    pp = &ptr
+    assert(**pp == 2)
+
+    pp = &&a
+    assert(**pp == 2)
+    assert(id(**pp) == id(a))
+
+    assert(*&a == 2)
+    
+    // assign
+    a = 1
+    def f1():
+        p = &a
+        *p = 2
+    end
+    f1()
+    assert(a == 2)
+
+    a = 1
+    def f1():
+        p = &a
+        *p += 1
+    end
+    f1()
+    assert(a == 2)
+
+    // vec
+    a = 1
+    vec = [&a]
+    *vec[0] += 3
+    assert(a == 4)
+    *vec[0] -= 1
+    assert(a == 3)
+    *vec[0] *= 2
+    assert(a == 6)
+    *vec[0] /= 3
+    assert(a == 2)
+    *vec[0] %= 3
+    assert(a == 2)
+    *vec[0] = 10
+    assert(a == 10)
+
+    // dict
+    a = 1
+    d = { "p": &a }
+    *d["p"] += 1
+    assert(a == 2)
+
+    // ident
+    a = 1
+    p = &a
+    a2 = *p
+    assert(a2 == 1)
+
+    // Ptr type
+    p = Ptr()
+    try:
+        *p
+        assert(0 and "Ptr")
+    catch NilPointerError:
+    end
+
+    a = 1
+    p = Ptr()
+    p = &a
+    assert(*p == 1)
+
+    // pointer to pointer
+    a = 1
+    pp = &Ptr()
+    *pp = &a
+    puts("hige")
+    assert(**pp == 1)
+    puts("def")
+
+    // func
+    def func():
+        return 1
+    end
+
+    p = &func
+    a = (*p)()
+    assert(a == 1)
+
+    a = p()
+    assert(a == 1)
+
+    // int
+    p = &1
+    assert(*p == 1)
+
+    // float
+    p = &1.23
+    assert(*p == 1.23)
+
+    // vec
+    vec = []
+    p = &vec
+    (*p).push(1)
+    (*p).push(2)
+    assert(len(*p) == 2)
+
+    p.push(3)
+    assert(len(*p) == 3)
+
+    pp = &&vec
+    (*pp).push(4)
+    assert(len(vec) == 4)
+
+    vec = [1, 2, 3]
+    p = &vec[0]
+    assert(*p == 1)
+
+    // dict
+    d = { "a": 1 }
+    p = &d
+    (*p)["a"] += 1
+    assert(d["a"] == 2)
+
+    p["a"] += 1
+    assert(d["a"] == 3)
+
+    // nil
+    p = &nil
+    assert(type(*p) == Nil)
+
+    // struct
+    struct S:
+        a = 1
+    end
+
+    p = &S
+    s = (*p)(2)
+    assert(s.a == 2)
+
+    s = p(2)
+    assert(s.a == 2)
+
+    s = S()
+    p = &s
+    (*p).a += 1
+    assert(s.a == 2)
+
+    p.a += 1
+    assert(s.a == 3)
+
+    // func and variable
+    def func(p):
+        *p *= 2
+    end
+
+    a = 2
+    func(&a)
+    assert(a == 4)
+
+    // string
+    s = "abc"
+    p = &s
+    assert(*p == "abc")
+    assert((*p)[0] == "a")
+    assert(p[1] == "b")
+    assert(p[2] == "c")
+end
+
+def casePtrAndStruct():
+    puts("$header ptrAndStruct")
+
+    // struct and pointer
+
+    a = 1
+    struct S:
+        sa = 2
+        p = &a
+    end
+
+    s = S()
+    p = &s
+    (*p).sa += 1
+    assert(s.sa == 3)
+    assert(id(*s.p) == id(a))
+
+    s = S()
+    *s.p += 1
+    assert(*s.p == 2)
+    assert(a == 2)
+
+    struct SS:
+        a = 1
+    end
+    ss = SS()
+    ss.a += 1
+
+    fa = 1
+    def f():
+        fa += 1
+    end
+    try:
+        f()
+        assert(0 and "error")
+    catch LookUpError as e:
+        assert(e.what() == "\"fa\" is not defined")
+    end
+
+    // int
+    a = 2
+    
+    *s.p -= 1
+    assert(a == 1)
+
+    *s.p *= 2
+    assert(a == 2)
+
+    *s.p /= 2
+    assert(a == 1)
+
+    a = 3
+    *s.p %= 2
+    assert(a == 1)
+end
+
+ga = 1
+gp = nil
+
+def casePtrLifeTime():
+    puts("$header casePtrLifeTime")
+
+    p = nil
+    def f1():
+        nonlocal p
+        a = 1  // local variable
+        p = &a  // danger! taken out to out of local scope
+    end
+
+    f1()
+    assert(*p == 1)  // but allow
+
+    a = 1
+    p = nil
+    def f2():
+        nonlocal a
+        nonlocal p
+        p = &a
+    end
+
+    f2()
+    assert(*p == 1)
+
+    a = 1
+    p = nil
+    def f3():
+        global ga
+        nonlocal p
+        p = &ga
+    end
+
+    f3()
+    assert(*p == 1)
+
+    d = { "a": 1 }
+    p = nil
+
+    def f4():
+        nonlocal p
+        p = &d.a
+        q = p
+        assert(*q == 1)
+        p2 = &*p
+        assert(*p2 == 1)
+        a2 = *p
+        p = &a2
+        assert(*p == 1)
+
+        d2 = { "a": 1 }
+        p = &d2
+        assert(p.a == 1)
+
+        vec = [0]
+        p = &vec
+        assert(p[0] == 0)
+
+        vec = [0]
+        global gp
+        gp = &vec
+        assert(gp[0] == 0)
+
+        for i = 0; i < 10; i += 1:
+            p = &i
+        end
+    end
+
+    f4()
+
+    p = nil
+    d = { "a": 1 }
+
+    def f5():
+        nonlocal p
+        p = &d
+
+        def inf1():
+            nonlocal p
+            p = &d
+        end
+
+        inf1()
+        assert(p.a == 1)
+    end
+
+    f5()
+    assert(p.a == 1)
+
+    p = nil
+    def f6():
+        nonlocal p
+        a = 1
+        p = &a
+    end
+
+    f6()
+    assert(*p == 1)
+
+    *p += 1
+    assert(*p == 2)
+
+    p = nil
+    def f7():
+        nonlocal p
+        p = &1
+    end
+
+    f7()
+    assert(*p == 1)
+    try:
+        *p += 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (1)")
+    end 
+end
+
+def casePtrAndLocalVar():
+    puts("$header casePtrAndLocalVar")
+
+    p = nil
+    a = 1
+
+    def func():
+        a = 2
+        nonlocal p
+        p = &a
+    end
+
+    func()
+    assert(*p == 2)
+end
+
+def casePtrAndVec():
+    puts("$header casePtrAndVec")
+
+    vec = []
+
+    def func():
+        nonlocal vec
+        a = 1
+        vec = [&a]
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        a = 1
+        vec[0] = &a
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and vec
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        a = [1]
+        vec[0] = &a[0]
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and dict
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        d = {"a": 1}
+        vec[0] = &d["a"]
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        d = {"a": 1}
+        vec[0] = &d.a
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and object
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        struct S:
+            a = 1
+        end
+        s = S()
+        vec[0] = &s.a
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and def-struct
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        struct S:
+            a = 1
+        end
+        vec[0] = &S.a
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and enum
+    vec = [Ptr()]
+
+    def func():
+        nonlocal vec
+        enum E:
+            a = 1
+        end
+        vec[0] = &E.a
+    end
+
+    func()
+    assert(*vec[0] == 1)
+end
+
+def casePtrAndVecPush():
+    puts("$header casePtrAndVecPush")
+
+    vec = []
+
+    def func():
+        nonlocal vec
+        a = 1
+        vec.push(&a)
+        assert(len(vec) == 1)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // vec and vec
+    vec = []
+    def func():
+        nonlocal vec
+        a = [1]
+        vec.push(&a)
+        vec.push(&a[0])
+        assert(len(vec) == 2)
+    end
+    func()
+    assert(vec[0][0] == 1)
+    assert(*vec[1] == 1)
+
+    // vec and dict
+    vec = []
+    def func():
+        nonlocal p
+        d = { "a": 1 }
+        vec.push(&d)
+        vec.push(&d["a"])
+        vec.push(&d.a)
+        assert(len(vec) == 3)
+    end
+    func()
+    assert(vec[0].a == 1)
+    assert(*vec[1] == 1)
+    assert(*vec[2] == 1)
+
+    // vec and object and def-struct
+    vec = []
+    def func():
+        struct S:
+            a = 1
+        end
+
+        s = S()
+        vec.push(&s)
+        vec.push(&s.a)
+        vec.push(&S)
+        vec.push(&S.a)
+
+        assert(len(vec) == 4)
+
+        ar = []
+        ar.push(&s)
+        ar.push(&s.a)
+        ar.push(&S)
+        ar.push(&S.a)
+        assert(len(ar) == 4)
+    end
+    func()
+    assert(vec[0].a == 1)
+    assert(*vec[1] == 1)
+    assert(vec[2].a == 1)
+    assert(*vec[3] == 1)
+
+    // vec and enum
+    vec = []
+    def func():
+        nonlocal p
+        enum E:
+            a = 1
+        end
+
+        vec.push(&E)
+        vec.push(&E.a)
+
+        assert(len(vec) == 2)
+        
+        ar = []
+        ar.push(&E)
+        ar.push(&E.a)
+        assert(len(ar) == 2)
+        assert(Str(*ar[0]) == "(enum)")
+        assert(Str(ar[0].a) == "1")
+    end
+    func()
+    assert(vec[0].a == 1)
+    assert(*vec[1] == 1)
+end
+
+def casePtrAndVecInsert():
+    puts("$header casePtrAndVecInsert")
+
+    vec = []
+
+    def func():
+        nonlocal vec
+        a = 1
+        vec.insert(0, &a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and vec
+    vec = []
+
+    def func():
+        nonlocal vec
+        a = [1]
+        vec.insert(0, &a)
+    end
+
+    func()
+    assert(vec[0][0] == 1)
+
+    vec = []
+
+    def func():
+        nonlocal vec
+        a = [1]
+        vec.insert(0, &a[0])
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and dict
+    vec = []
+
+    def func():
+        nonlocal vec
+        d = {"a": 1}
+        vec.insert(0, &d)
+    end
+
+    func()
+    assert(vec[0].a == 1)
+
+    // insert and dict 2
+    vec = []
+
+    def func():
+        nonlocal vec
+        d = {"a": 1}
+        vec.insert(0, &d["a"])
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and dict 3
+    vec = []
+
+    def func():
+        nonlocal vec
+        d = {"a": 1}
+        vec.insert(0, &d.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and dict 4
+    vec = []
+    gd = {"a": 1}
+
+    def func():
+        nonlocal vec
+        vec.insert(0, &gd.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and object
+    vec = []
+
+    def func():
+        nonlocal vec
+        struct S:
+            a = 1
+        end
+        s = S()
+        vec.insert(0, &s.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and object 2
+    vec = []
+
+    def func():
+        nonlocal vec
+        struct S:
+            struct SS:
+                a = 1
+            end
+            s = SS()
+        end
+        s = S()
+        vec.insert(0, &s.s.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and def-struct 1
+    vec = []
+
+    def func():
+        nonlocal vec
+        struct S:
+            a = 1
+        end
+        vec.insert(0, &S.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and def-struct 2
+    vec = []
+    struct S:
+        a = 1
+    end
+
+    def func():
+        nonlocal vec
+        vec.insert(0, &S.a)
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and return value 
+    vec = []
+    def getPtr():
+        getPtrA = 1
+        return &getPtrA
+    end
+
+    def func():
+        nonlocal vec
+        vec.insert(0, getPtr())
+    end
+
+    func()
+    assert(*vec[0] == 1)
+
+    // insert and return value of method
+    vec = []
+
+    def func():
+        nonlocal vec
+        struct S:
+            met getPtr(self):
+                S_getPtr_a = 1
+                return &S_getPtr_a
+            end
+        end
+        s = S()
+        vec.insert(0, s.getPtr())
+    end
+
+    func()
+    assert(*vec[0] == 1)
+end
+
+def casePtrAndVecExtend():
+    puts("$header casePtrAndVecExtend")
+
+    vec = [1]
+
+    def func():
+        nonlocal vec
+        a = [2, 3]
+        vec.extend(a)
+        assert(len(vec) == 3)
+
+        b = 1
+        a = [&b]
+        vec.extend(a)
+
+        a = 1
+        b = [&a]
+        c = [b]
+        vec.extend(c)
+    end
+    func()
+    assert(vec[0] == 1)
+    assert(vec[1] == 2)
+    assert(vec[2] == 3)
+    assert(*vec[3][0] == 1)
+    assert(*vec[4][0] == 1)
+
+    vec = []
+    a = 1
+    vec.extend([&a])
+    assert(*vec[0] == 1)
+end
+
+def casePtrAndDict():
+    puts("$header casePtrAndDict")
+
+    d = []
+
+    def func():
+        nonlocal d
+        a = 1
+        d = { "p": &a }
+    end
+
+    func()
+    assert(*d["p"] == 1)
+
+    d = {"a": 1}
+    dd = {"b": &d}
+    assert(dd["b"]["a"] == 1)
+    assert(dd.b.a == 1)
+
+    vec = [1]
+    d = {"a": &vec}
+    dd = {"b": &d}
+    assert(dd["b"]["a"][0] == 1)
+    assert(dd.b.a[0] == 1)
+
+    struct S:
+        a = 1
+        b = [&a]
+    end
+
+    d = {"c": &S}
+    assert(*d["c"].b[0] == 1)
+    d = {"c": &S()}
+    assert(*d["c"].b[0] == 1)
+end
+
+def casePtrAndDictAssign():
+    puts("$header casePtrAndDictAssign")
+
+    d = {}
+
+    def func():
+        nonlocal d
+        a = 1
+        d["a"] = { "p": &a }
+    end
+
+    func()
+    puts(d["a"]["p"])
+    assert(*d["a"]["p"] == 1)
+
+    d = {}
+
+    def func():
+        nonlocal d
+        a = 1
+        d["a"] = { "p": &a }
+    end
+
+    func()
+    assert(*d["a"]["p"] == 1)
+
+    d = {}
+
+    def func():
+        nonlocal d
+        a = 1
+        d.p = &a
+    end
+
+    func()
+    assert(*d["p"] == 1)
+
+    d = {}
+
+    def func():
+        nonlocal d
+        a = 1
+        d["p"] = &a
+    end
+
+    func()
+    assert(*d["p"] == 1)
+end
+
+def casePtrAndStructAssign():
+    puts("$header casePtrAndStructAssign")
+
+    struct S:
+        p = nil
+    end
+    struct SS:
+        a = 1
+    end
+    s = S()
+
+    def func():
+        a = 1
+        s.p = { "p": &a }
+    end
+
+    func()
+    assert(*s.p.p == 1)
+
+    def func():
+        d = { "a": 1 }
+        s.p = &d["a"]
+    end
+
+    func()
+    assert(*s.p == 1)
+
+    gd = { "a": 1 }
+    def func():
+        s.p = &gd.a
+    end
+
+    func()
+    assert(*s.p == 1)
+
+    def func():
+        d = { "a": 1 }
+        s.p = &d.a
+    end
+
+    func()
+    assert(*s.p == 1)
+
+    def func():
+        a = 1
+        s.p = &a
+    end
+
+    func()
+    assert(*s.p == 1)
+
+    def func():
+        vec = [0]
+        s.p = &vec[0]
+    end
+
+    func()
+    assert(*s.p == 0)
+
+    def func():
+        ss = SS()
+        s.p = &ss.a
+    end
+
+    func()
+    assert(*s.p == 1)
+
+    struct S:
+        p = nil
+    end
+
+    gd = { "a": 1 }
+    def func():
+        nothing.p = &gd.a
+    end
+
+    try:
+        func()
+        assert(0 and "nothing")
+    catch LookUpError as e:
+        assert(e.what() == "\"nothing\" is not defined")
+    end 
+end
+
+def casePtrAndFor():
+    puts("$header casePtrAndFor")
+
+    p = nil
+
+    for i = 0; i < 10; i += 1:
+        p = &i
+    end
+
+    assert(*p == 10)
+    assert(*p == i)
+    *p += 1
+    assert(i == 11)
+end
+
+def casePtrAndIf():
+    puts("$header casePtrAndFor")
+
+    p = nil
+
+    if p == nil:
+        a = 1
+        p = &a
+    end
+
+    assert(*p == 1)
+end
+
+def caseEtc():
+    // TODO: fix me!
+    s = "abc"
+    p = &s
+
+    puts(*p == "a")
+    // puts(p == "abc")
+
+    // d = { "abc": 1 }
+    // puts(d[p])  // 1
+
+    // p += 1
+    // puts(*p == "b")
+
+    // p -= 1
+    // puts(*p == "a")
+
+    // assert(p == "abc")
+    // p += 1
+    // assert(p == "bc")
+    // assert(p[0] == "b")
+
+    v = [1, 2, 3]
+    p = &v
+    puts(*p == 1)
+
+    // p += 1
+    // puts(*p == 2)
+
+    // p -= 1
+    // puts(*p == 1)
+
+    // assert(p == [1, 2, 3])
+    // p += 1
+    // assert(p == [2, 3])
+    // assert(p[0] == 2)
+
+    // b = &v[0]
+    // e = &v[2]
+
+    // assert(b < e)
+    // assert(b <= e)
+    // assert(b > e)
+    // assert(b >= e)
+    // assert(not b)
+    // assert(b == e)
+    // assert(b != e)
+
+    // pp = (b + 1)
+    // assert(*pp == 2)
+
+    // for b != e:
+    //     puts(*b)
+    //     b += 1
+    // end
+end
+
+def caseExpr():
+    a = "abc"
+    p = &a
+
+    try: 
+        p += 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (18)")
+    end
+
+    try: 
+        p -= 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand type (18)")
+    end
+
+    try: 
+        p *= 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (18)")
+    end
+
+    try: 
+        p /= 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand")
+    end
+
+    try: 
+        p %= 1
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand")
+    end
+
+    try:
+        assert((a == p) == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid right hand operand")
+    end
+
+    try:
+        assert((a != p) == true)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid right hand operand")
+    end
+
+    try:
+        assert((a > p) == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "can't compare with gt")
+    end
+
+    try:
+        assert((a >= p) == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "can't compare with gte")
+    end
+
+    try:
+        assert((a < p) == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "can't compare with lt (5)")
+    end
+
+    try:
+        assert((a <= p) == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "can't compare with lte")
+    end
+
+    try:
+        assert((&a == p) == true)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (18)")
+    end
+
+    try:
+        assert(not p == false)
+        assert(0 and "error")
+    catch TypeError as e:
+        assert(e.what() == "invalid left hand operand (18)")
+    end
+end
+
+cases = {
+    "ptr": casePtr,
+    "ptrAndStruct": casePtrAndStruct,
+    "ptrLifeTime": casePtrLifeTime,
+    "ptrAndLocalVar": casePtrAndLocalVar,
+    "ptrAndVec": casePtrAndVec,
+    "ptrAndVecPush": casePtrAndVecPush,
+    "ptrAndVecInsert": casePtrAndVecInsert,
+    "ptrAndDict": casePtrAndDict,
+    "ptrAndDictAssign": casePtrAndDictAssign,
+    "ptrAndStructAssign": casePtrAndStructAssign,
+    "ptrAndVecExtend": casePtrAndVecExtend,
+    "ptrAndFor": casePtrAndFor,
+    "ptrAndIf": casePtrAndIf,
+    "expr": caseExpr,
+    "etc": caseEtc,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}

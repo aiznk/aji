@@ -1,0 +1,37 @@
+{@
+header = "Test builtin/modules/io"
+
+import "io"
+
+def constants():
+    puts("$header constants")
+
+    // assert(os.SEEK_SET == 0)
+end
+
+def readfile():
+    puts("$header readfile")
+
+    content = io.readfile("./tests/builtin/modules/data/file1.txt")
+    assert(content == "This is a pen.
+That is a cat.
+I am blogger.
+")
+
+    try:
+        io.readfile("notfound.txt")
+    catch OSError as e:
+        assert(e.what() == "failed to read file \"notfound.txt\"")
+    end
+end
+
+cases = {
+    "constants": constants,
+    "readfile": readfile,
+}
+
+def main(case):
+    from "tests/utils" import run
+    run(case, cases)
+end
+@}
