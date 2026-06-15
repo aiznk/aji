@@ -13,6 +13,8 @@ $ make clean
 $ make init
 $ make
 $ ./build/aji -h
+$ ./build/aji ./build/samples/hello-world.aji
+Hello, World!
 ```
 
 2026-05-15
