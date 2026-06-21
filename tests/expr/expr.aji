@@ -17,6 +17,9 @@ def case1():
 
     assert(1 - 2 == -1)
     assert(-1 == 1 - 2)
+
+    assert(2 * 3 / 3 == 2)
+    assert(2 * 3 + 3 / 3 == 7)
 end
 
 def case2():
@@ -3354,7 +3357,7 @@ def check(exprs):
                     expr[0] <= expr[1]
                     assert(0 and "hige")
                 catch TypeError as e:
-                    puts("TypeError!")
+                    puts("TypeError! (ok)")
                 end
             end
         end
@@ -7076,6 +7079,12 @@ def caseAdd():
     assert(1 + 1.2 == 2.2)
     assert(1 + 1.2 + 2.3 == 4.5)
 
+    // Int, Bool
+    assert(false + 1 == 1)
+    assert(true + 1 == 2)
+    assert(1 + false == 1)
+    assert(1 + true == 2)
+
     // Int, Nil
     try:
         1 + nil
@@ -7132,6 +7141,158 @@ def caseAdd():
     end
 end
 
+def caseSub():
+    puts("$header caseSub")
+
+    // Int, Int
+    assert(1 - 1 == 0)
+    assert(1 - 1 - 1 == -1)
+
+    // Int, Float
+    
+    // TODO: Assertion error
+    // puts(1 - 1.2)
+    // assert(1 - 1.2 == -0.2)
+    
+    assert(1 - 0.5 == 0.5)
+    assert(1 - 1.2 - 2.3 == -2.5)
+
+    // Int, Bool
+    assert(false - 1 == -1)
+    assert(true - 1 == 0)
+    assert(1 - false == 1)
+    assert(1 - true == 0)
+
+    // Int, Nil
+    try:
+        1 - nil
+    catch TypeError as e:
+        assert(e.what() == "can't sub with int")
+    end
+
+    try:
+        nil - 1
+    catch TypeError as e:
+        assert(e.what() == "can't sub")
+    end
+
+    // Int, Str
+    try:
+        1 - "a"
+    catch TypeError as e:
+        assert(e.what() == "can't sub with int")
+    end
+
+    try:
+        "a" - 1
+    catch TypeError as e:
+        assert(e.what() == "can't sub")
+    end
+
+    // Int, Struct
+    struct S: end
+
+    try:
+        1 - S
+    catch TypeError as e:
+        assert(e.what() == "can't sub with int")
+    end
+
+    try:
+        S - 1
+    catch TypeError as e:
+        assert(e.what() == "can't sub")
+    end
+
+    o = S()
+
+    try:
+        1 - o
+    catch TypeError as e:
+        assert(e.what() == "can't sub with int")
+    end
+
+    try:
+        o - 1
+    catch TypeError as e:
+        assert(e.what() == "can't sub")
+    end
+end
+
+def caseMul():
+    puts("$header caseMul")
+
+    // Int, Int
+    assert(2 * 2 == 4)
+    assert(2 * 2 * 2 == 8)
+
+    // Int, Float
+    
+    assert(1 * 0.5 == 0.5)
+    assert(1 * 0.5 * 2.0 == 1.0)
+
+    // Int, Bool
+    assert(false * 2 == 0)
+    assert(true * 2 == 2)
+    assert(2 * false == 0)
+    assert(2 * true == 2)
+
+    // Int, Nil
+    try:
+        1 * nil
+    catch TypeError as e:
+        assert(e.what() == "can't mul with int")
+    end
+
+    try:
+        nil * 1
+    catch TypeError as e:
+        assert(e.what() == "can't mul")
+    end
+
+    // Int, Str
+    try:
+        1 * "a"
+    catch TypeError as e:
+        assert(e.what() == "can't mul with int")
+    end
+
+    try:
+        "a" * 1
+    catch TypeError as e:
+        assert(e.what() == "can't mul")
+    end
+
+    // Int, Struct
+    struct S: end
+
+    try:
+        1 * S
+    catch TypeError as e:
+        assert(e.what() == "can't mul with int")
+    end
+
+    try:
+        S * 1
+    catch TypeError as e:
+        assert(e.what() == "can't mul")
+    end
+
+    o = S()
+
+    try:
+        1 * o
+    catch TypeError as e:
+        assert(e.what() == "can't mul with int")
+    end
+
+    try:
+        o * 1
+    catch TypeError as e:
+        assert(e.what() == "can't mul")
+    end
+end
+
 def caseEscape():
     puts("$header caseAdd")
 
@@ -7160,8 +7321,8 @@ def main(case):
         "lt": caseLt,
         "gt": caseGt,
         "add": caseAdd,
-        // "-": caseSub,
-        // "*": caseMul,
+        "sub": caseSub,
+        "mul": caseMul,
         // "/": caseDiv,
         // "%": caseMod,
         // "+=": caseAddAss,
