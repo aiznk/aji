@@ -3,13 +3,11 @@ ifeq ($(OS), Windows_NT)
 	RM := del
 	RMDIR := rmdir /s /q
 	SEP := \\
-	COPY-WS2-32 := copy C:$(SEP)Windows$(SEP)System32$(SEP)ws2_32.dll build$(SEP)dll$(SEP)
 	LIBS := -l ws2_32
 else
 	RM := rm
 	RMDIR := rm -rf
 	SEP := /
-	COPY-WS2-32 := 
 	LIBS := 
 endif
 
@@ -168,15 +166,12 @@ SRCS := build/lib/error.c \
 OBJS := $(SRCS:.c=.o)
 
 tests: build/tests.o $(OBJS)
-	#$(COPY-WS2-32)
 	$(CC) $(CFLAGS) -o build/aji_tests $^ $(LIBS)
 
 aji: build/app.o $(OBJS)
-	#$(COPY-WS2-32)
 	$(CC) $(CFLAGS) -o build/aji $^ $(LIBS)
 
 lib: $(OBJS)
-	#$(COPY-WS2-32)
 	$(CC) $(CFLAGS) -shared -o build/$(OUTLIB) $^ $(LIBS)
 
 .PHONY: test

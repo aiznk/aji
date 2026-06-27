@@ -25,7 +25,11 @@
 #include <aji/lib/memory.h>
 
 #if defined(_WIN32) || defined(_WIN64)
-# define AJI_SOCK__WINDOWS 1
+	#define AJI_SOCK__WINDOWS 1
+#endif
+
+#ifdef AJI_SOCK__WINDOWS
+	#pragma comment(lib, "ws2_32.dll")
 #endif
 
 struct AjiSock;
